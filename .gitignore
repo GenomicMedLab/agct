@@ -70,3 +70,6 @@ docs/_build/
 
 # Pyenv
 .python-version
+
+# chain files for local exploratory work
+*.chain
