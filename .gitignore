@@ -73,3 +73,5 @@ docs/_build/
 
 # chain files for local exploratory work
 *.chain
+
+Cargo.lock

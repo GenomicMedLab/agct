@@ -19,7 +19,7 @@ class Liftie:
         :param from_db: database name, e.g. ``"hg19"``
         :param to_db: database name, e.g. ``"hg19"``
         """
-        pass
+        self._lifter = _liftie.Lifter(from_db, to_db)
 
     def liftover(self, chrom: str, pos: int, strand: Strand = Strand.SENSE) -> str:
         """Perform liftover for given params
@@ -29,4 +29,4 @@ class Liftie:
         :param strand: query strand (``"+"`` by default)
         :return: first match TODO return whole list
         """
-        return _liftie.liftover(chrom, pos)
+        return self._lifter.lift(chrom, pos)
