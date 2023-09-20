@@ -1,5 +1,6 @@
 //! Provide Rust-based liftover classes.
 use chainfile as chain;
+use directories::BaseDirs;
 use pyo3::prelude::*;
 use std::fs;
 use std::fs::File;
@@ -10,16 +11,21 @@ use std::path::Path;
 /// TODO: fetch from remote if not available locally, probably via config
 /// TODO: throw exceptions if unable to acquire
 fn get_chainfile(from_db: &str, to_db: &str) -> String {
-    let base_chainfile_dir = "~/.local/share/liftie/";
-    fs::create_dir_all(base_chainfile_dir).unwrap();
-    let path = format!(
-        "{}/hg{}ToHg{}.over.chain",
-        base_chainfile_dir, from_db, to_db
-    );
-    if Path::new(&path).exists() {
-        path
+    if let Some(base_dirs) = BaseDirs::new() {
+        let data_dir = base_dirs.home_dir();
+        let base_chainfile_dir = format!("{}/.local/share/liftie", data_dir.display());
+        fs::create_dir_all(base_chainfile_dir.clone()).unwrap();
+        let path = format!(
+            "{}/hg{}ToHg{}.over.chain",
+            base_chainfile_dir, from_db, to_db
+        );
+        if Path::new(&path).exists() {
+            path
+        } else {
+            "this isn't going to work".to_string() // TODO fetch from remote
+        }
     } else {
-        "this isn't going to work".to_string() // TODO fetch from remote
+        "this isn't going to work either".to_string() // TODO handle panic
     }
 }
 
