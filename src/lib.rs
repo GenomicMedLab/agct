@@ -22,14 +22,15 @@ fn get_chainfile(from_db: &str, to_db: &str) -> String {
         if Path::new(&path).exists() {
             path
         } else {
-            "this isn't going to work".to_string() // TODO fetch from remote
+            "this isn't going to work".to_string()
         }
     } else {
-        "this isn't going to work either".to_string() // TODO handle panic
+        "this isn't going to work either".to_string()
     }
 }
 
 /// Define core Lifter class to be used by Python interface.
+/// Effectively just a wrapper on top of the chainfile crate's Machine struct.
 #[pyclass]
 pub struct Lifter {
     pub machine: chain::liftover::machine::Machine,
@@ -48,14 +49,25 @@ impl Lifter {
         Lifter { machine }
     }
 
-    pub fn lift(&self, chrom: &str, pos: usize) -> PyResult<String> {
-        let interval_string: String = format!("{}:{}", chrom, pos);
+    /// Perform liftover
+    /// TODO: strand arg
+    /// TODO: return chain score
+    /// TODO: use pytuple
+    pub fn lift(&self, chrom: &str, pos: usize) -> PyResult<Vec<Vec<String>>> {
+        let query_interval_string: String = format!("{}:{}", chrom, pos);
 
-        let interval = interval_string.parse::<chain::core::Interval>().unwrap();
-        for result in self.machine.liftover(&interval).unwrap() {
-            return Ok(result.query().to_string());
-        }
-        Ok("".to_string())
+        let query_interval = query_interval_string
+            .parse::<chain::core::Interval>()
+            .unwrap();
+        let liftover_result = self.machine.liftover(&query_interval).unwrap();
+        return Ok(liftover_result
+            .iter()
+            .map(|r| vec![
+                r.reference().contig().to_string(),
+                r.reference().start().position().to_string(),
+                r.reference().strand().to_string()
+            ])
+            .collect());
     }
 }
 

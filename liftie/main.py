@@ -21,7 +21,7 @@ class Liftie:
         """
         self._lifter = _liftie.Lifter(from_db, to_db)
 
-    def liftover(self, chrom: str, pos: int, strand: Strand = Strand.SENSE) -> str:
+    def convert_coordinate(self, chrom: str, pos: int, strand: Strand = Strand.SENSE) -> str:
         """Perform liftover for given params
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
