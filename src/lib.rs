@@ -1,6 +1,8 @@
 //! Provide Rust-based liftover classes.
+use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
 use directories::BaseDirs;
+use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::fs;
 use std::fs::File;
@@ -10,6 +12,7 @@ use std::path::Path;
 /// Acquire chainfile.
 /// TODO: fetch from remote if not available locally, probably via config
 /// TODO: throw exceptions if unable to acquire
+/// TODO: specify base dir
 fn get_chainfile(from_db: &str, to_db: &str) -> String {
     if let Some(base_dirs) = BaseDirs::new() {
         let data_dir = base_dirs.home_dir();
@@ -50,23 +53,31 @@ impl Lifter {
     }
 
     /// Perform liftover
-    /// TODO: strand arg
     /// TODO: return chain score
     /// TODO: use pytuple
-    pub fn lift(&self, chrom: &str, pos: usize) -> PyResult<Vec<Vec<String>>> {
-        let query_interval_string: String = format!("{}:{}", chrom, pos);
+    pub fn lift(&self, chrom: &str, pos: usize, strand: &str) -> PyResult<Vec<Vec<String>>> {
+        let parsed_strand = if strand == "+" {
+            Strand::Positive
+        } else if strand == "-" {
+            Strand::Negative
+        } else {
+            return Err(PyValueError::new_err(format!(
+                "Unrecognized strand value: \"{}\"",
+                strand
+            )));
+        };
+        let start = Coordinate::try_new(chrom, pos, parsed_strand.clone()).unwrap();
+        let end = Coordinate::try_new(chrom, pos + 1, parsed_strand.clone()).unwrap();
 
-        let query_interval = query_interval_string
-            .parse::<chain::core::Interval>()
-            .unwrap();
-        let liftover_result = self.machine.liftover(&query_interval).unwrap();
+        let interval = Interval::try_new(start, end).unwrap();
+        let liftover_result = self.machine.liftover(&interval).unwrap();
         return Ok(liftover_result
             .iter()
             .map(|r| {
                 vec![
-                    r.reference().contig().to_string(),
-                    r.reference().start().position().to_string(),
-                    r.reference().strand().to_string(),
+                    r.query().contig().to_string(),
+                    r.query().start().position().to_string(),
+                    r.query().strand().to_string(),
                 ]
             })
             .collect());
