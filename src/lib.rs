@@ -62,11 +62,13 @@ impl Lifter {
         let liftover_result = self.machine.liftover(&query_interval).unwrap();
         return Ok(liftover_result
             .iter()
-            .map(|r| vec![
-                r.reference().contig().to_string(),
-                r.reference().start().position().to_string(),
-                r.reference().strand().to_string()
-            ])
+            .map(|r| {
+                vec![
+                    r.reference().contig().to_string(),
+                    r.reference().start().position().to_string(),
+                    r.reference().strand().to_string(),
+                ]
+            })
             .collect());
     }
 }
