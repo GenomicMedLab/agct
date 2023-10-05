@@ -1,7 +1,7 @@
 """Perform chainfile-driven liftover."""
 from enum import Enum
 
-import liftie._liftie as _liftie
+import chainlifter._core as _core
 
 
 class Strand(str, Enum):
@@ -9,8 +9,10 @@ class Strand(str, Enum):
     NEGATIVE = "-"
 
 
-class Liftie:
-    """Liftover provider for a single DB to DB association."""
+class Chainfile:
+    """Chainfile-based Liftover provider for a single sequence to sequence
+    association.
+    """
 
     def __init__(self, from_db: str, to_db: str) -> None:
         """Initialize liftover instance.
@@ -18,14 +20,14 @@ class Liftie:
         :param from_db: database name, e.g. ``"19"``
         :param to_db: database name, e.g. ``"38"``
         """
-        self._lifter = _liftie.Lifter(from_db, to_db)
+        self._chainlifter = _core.ChainLifter(from_db, to_db)
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
     ) -> str:
         """Perform liftover for given params
 
-        The ``Strand`` enum provides helpful constraints for legal strand values:
+        The ``Strand`` enum provides constraints for legal strand values:
 
         .. code-block:: python
 
@@ -41,4 +43,4 @@ class Liftie:
         :param strand: query strand (``"+"`` by default).
         :return: first match TODO return whole list
         """
-        return self._lifter.lift(chrom, pos, strand)
+        return self._chainlifter.lift(chrom, pos, strand)

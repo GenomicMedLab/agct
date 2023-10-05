@@ -1,4 +1,4 @@
-//! Provide Rust-based liftover classes.
+//! Provide Rust-based chainfile wrapping classes.
 use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
 use directories::BaseDirs;
@@ -32,24 +32,24 @@ fn get_chainfile(from_db: &str, to_db: &str) -> String {
     }
 }
 
-/// Define core Lifter class to be used by Python interface.
+/// Define core ChainLifter class to be used by Python interface.
 /// Effectively just a wrapper on top of the chainfile crate's Machine struct.
 #[pyclass]
-pub struct Lifter {
+pub struct ChainLifter {
     pub machine: chain::liftover::machine::Machine,
 }
 
 #[pymethods]
-impl Lifter {
+impl ChainLifter {
     #[new]
-    pub fn new(from_db: &str, to_db: &str) -> Lifter {
+    pub fn new(from_db: &str, to_db: &str) -> ChainLifter {
         let chainfile_name: String = get_chainfile(from_db, to_db);
         let data = BufReader::new(File::open(&chainfile_name).unwrap());
         let reader = chain::Reader::new(data);
         let machine = chain::liftover::machine::Builder::default()
             .try_build_from(reader)
             .unwrap();
-        Lifter { machine }
+        ChainLifter { machine }
     }
 
     /// Perform liftover
@@ -84,9 +84,9 @@ impl Lifter {
     }
 }
 
-/// Liftie Python module. Collect Python-facing methods.
+/// ChainLifter Python module. Collect Python-facing methods.
 #[pymodule]
-fn _liftie(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    m.add_class::<Lifter>()?;
+fn _chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    m.add_class::<ChainLifter>()?;
     Ok(())
 }

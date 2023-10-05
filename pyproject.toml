@@ -1,9 +1,5 @@
-[build-system]
-requires = ["maturin>=1.2,<2.0"]
-build-backend = "maturin"
-
 [project]
-name = "liftie"
+name = "chainlifter"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
@@ -18,10 +14,13 @@ classifiers = [
     'Programming Language :: Python :: 3.11',
 ]
 
+[build-system]
+requires = ["maturin>=1.2,<2.0"]
+build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "liftie._liftie"
+module-name = "chainlifter._core"
 
 [project.optional-dependencies]
 test = []
@@ -30,4 +29,3 @@ dev = [
     "black",
     "pre-commit"
 ]
-
