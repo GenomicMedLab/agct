@@ -1,11 +1,10 @@
 """Perform chainfile-driven liftover."""
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 from typing import Callable
 
-import requests
-from wags_tails import CustomData, DataSource
-from wags_tails.utils.downloads import handle_gzip, download_http
+from wags_tails import CustomData
+from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
 import chainlifter._core as _core
@@ -51,6 +50,7 @@ class ChainLifter:
         :param to_db: genome lifting to
         :return: Function that downloads appropriate chainfile from UCSC
         """
+
         def _download_data(version: str, file: Path) -> None:
             """Download and gunzip chainfile from UCSC.
 
