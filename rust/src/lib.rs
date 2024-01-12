@@ -1,7 +1,7 @@
 //! Provide Rust-based chainfile wrapping classes.
 use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
-use pyo3::exceptions::{PyValueError, PyFileNotFoundError};
+use pyo3::exceptions::{PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use std::fs::File;
 use std::io::BufReader;
