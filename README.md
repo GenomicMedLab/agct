@@ -8,7 +8,7 @@ Initialize a class instance:
 
 ```python3
 from chainlifter.lifter import ChainLifter
-ch = ChainLifter("38", "19")
+ch = ChainLifter("hg38", "hg19")
 ```
 
 Call ``convert_coordinate``:

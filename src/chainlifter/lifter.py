@@ -1,5 +1,5 @@
 """Perform chainfile-driven liftover."""
-from enum import Enum
+from enum import Enum, StrEnum
 from pathlib import Path
 from typing import Callable
 
@@ -10,11 +10,22 @@ from wags_tails.utils.storage import get_data_dir
 import chainlifter._core as _core
 
 
-class Strand(str, Enum):
+class Strand(StrEnum):
     """Constrain strand values."""
 
     POSITIVE = "+"
     NEGATIVE = "-"
+
+
+class Genome(StrEnum):
+    """Constrain genome values.
+
+    We could conceivably support every UCSC chainfile offering, but for now, we'll
+    stick with internal use cases only.
+    """
+
+    HG38 = "hg38"
+    HG19 = "hg19"
 
 
 class ChainLifter:
@@ -22,14 +33,16 @@ class ChainLifter:
     association.
     """
 
-    def __init__(self, from_db: str, to_db: str) -> None:
+    def __init__(self, from_db: Genome, to_db: Genome) -> None:
         """Initialize liftover instance.
 
         :param from_db: database name, e.g. ``"19"``
         :param to_db: database name, e.g. ``"38"``
         """
+        if from_db == to_db:
+            raise ValueError("Liftover must be to/from different sources.")
         data_handler = CustomData(
-            f"chainfile_{from_db}_to_{to_db}",
+            f"chainfile_{from_db.value}_to_{to_db.value}",
             "chain",
             lambda: "",
             self._download_function_builder(from_db, to_db),
@@ -39,7 +52,7 @@ class ChainLifter:
         self._chainlifter = _core.ChainLifter(str(file.absolute()))
 
     @staticmethod
-    def _download_function_builder(from_db: str, to_db: str) -> Callable:
+    def _download_function_builder(from_db: Genome, to_db: Genome) -> Callable:
         """Build downloader function for chainfile corresponding to source/destination
         params.
 
@@ -57,7 +70,7 @@ class ChainLifter:
             :param version: not used
             :param file: path to save file to
             """
-            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_db}/liftOver/{from_db}To{to_db.title()}.over.chain.gz"
+            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_db.value}/liftOver/{from_db.value}To{to_db.value.title()}.over.chain.gz"
             download_http(url, file, handler=handle_gzip)
 
         return _download_data
