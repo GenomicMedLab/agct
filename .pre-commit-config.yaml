@@ -1,18 +1,18 @@
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v1.4.0
+  rev: v4.5.0
   hooks:
   - id: check-added-large-files
   - id: detect-private-key
   - id: trailing-whitespace
   - id: end-of-file-fixer
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.1.12
+  rev: v0.1.13
   hooks:
     - id: ruff
       args: [ --fix, --exit-non-zero-on-fix ]
 - repo: https://github.com/doublify/pre-commit-rust
-  rev: master
+  rev: v1.0
   hooks:
   - id: fmt
     args: ['--verbose', '--']
