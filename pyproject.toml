@@ -51,10 +51,10 @@ build-backend = "maturin"
 [tool.maturin]
 features = ["pyo3/extension-module"]
 module-name = "chainlifter._core"
-python-source = "python"
+python-source = "src"
 
 [tool.ruff]
-src = ["python"]
+src = ["src"]
 # pycodestyle (E, W)
 # Pyflakes (F)
 # flake8-annotations (ANN)
