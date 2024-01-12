@@ -1,5 +1,5 @@
 """Perform chainfile-driven liftover."""
-from enum import Enum, StrEnum
+from enum import StrEnum
 from pathlib import Path
 from typing import Callable
 
