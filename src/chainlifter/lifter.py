@@ -41,6 +41,10 @@ class ChainLifter:
         """
         if from_db == to_db:
             raise ValueError("Liftover must be to/from different sources.")
+        if not isinstance(from_db, Genome):
+            from_db = Genome(from_db)
+        if not isinstance(to_db, Genome):
+            to_db = Genome(to_db)
         data_handler = CustomData(
             f"chainfile_{from_db.value}_to_{to_db.value}",
             "chain",
