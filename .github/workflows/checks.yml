@@ -18,6 +18,9 @@ jobs:
         run: python3 -m ruff check . && ruff format --check .
   rust-lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./rust
     steps:
       - uses: actions/checkout@v3
 

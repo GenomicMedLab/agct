@@ -95,7 +95,8 @@ impl ChainLifter {
 
 /// ChainLifter Python module. Collect Python-facing methods.
 #[pymodule]
-fn _chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+#[pyo3(name = "_core")]
+fn chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<ChainLifter>()?;
     Ok(())
 }
