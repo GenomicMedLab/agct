@@ -4,31 +4,40 @@ use chainfile as chain;
 use directories::BaseDirs;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use std::env;
 use std::fs;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
+
+fn get_chainfile_dir() -> String {
+    let env_var_name = "CHAINLIFTER_DATA_DIR";
+    if let Ok(value) = env::var(env_var_name) {
+        return value;
+    } else if let Some(base_dirs) = BaseDirs::new() {
+        let data_dir = base_dirs.home_dir();
+        let base_chainfile_dir = format!("{}/.local/share/chainlifter", data_dir.display());
+        return base_chainfile_dir;
+    } else {
+        panic!("Unable to get ChainLifter data directory.")
+    }
+}
 
 /// Acquire chainfile.
 /// TODO: fetch from remote if not available locally, probably via config
 /// TODO: throw exceptions if unable to acquire
 /// TODO: specify base dir
 fn get_chainfile(from_db: &str, to_db: &str) -> String {
-    if let Some(base_dirs) = BaseDirs::new() {
-        let data_dir = base_dirs.home_dir();
-        let base_chainfile_dir = format!("{}/.local/share/liftie", data_dir.display());
-        fs::create_dir_all(base_chainfile_dir.clone()).unwrap();
-        let path = format!(
-            "{}/hg{}ToHg{}.over.chain",
-            base_chainfile_dir, from_db, to_db
-        );
-        if Path::new(&path).exists() {
-            path
-        } else {
-            "this isn't going to work".to_string()
-        }
+    let base_chainfile_dir = get_chainfile_dir();
+    fs::create_dir_all(base_chainfile_dir.clone()).unwrap();
+    let path = format!(
+        "{}/hg{}ToHg{}.over.chain",
+        base_chainfile_dir, from_db, to_db
+    );
+    if Path::new(&path).exists() {
+        path
     } else {
-        "this isn't going to work either".to_string()
+        "this isn't going to work".to_string()
     }
 }
 
