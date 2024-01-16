@@ -15,4 +15,5 @@ repos:
   rev: v1.0
   hooks:
   - id: fmt
+    entry: bash -c 'cd rust'
     args: ['--verbose', '--']
