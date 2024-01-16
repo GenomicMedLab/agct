@@ -101,7 +101,9 @@ class ChainLifter:
         :return: first match TODO return whole list
         """
         try:
-            result: Optional[List[List[str]]] = self._chainlifter.lift(chrom, pos, strand)
+            result: Optional[List[List[str]]] = self._chainlifter.lift(
+                chrom, pos, strand
+            )
         except _core.NoLiftoverError:
             result = None
         return result
