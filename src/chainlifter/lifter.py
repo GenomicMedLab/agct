@@ -1,5 +1,5 @@
 """Perform chainfile-driven liftover."""
-from enum import StrEnum
+from enum import Enum
 from pathlib import Path
 from typing import Callable, List, Optional
 
@@ -10,14 +10,14 @@ from wags_tails.utils.storage import get_data_dir
 import chainlifter._core as _core
 
 
-class Strand(StrEnum):
+class Strand(str, Enum):
     """Constrain strand values."""
 
     POSITIVE = "+"
     NEGATIVE = "-"
 
 
-class Genome(StrEnum):
+class Genome(str, Enum):
     """Constrain genome values.
 
     We could conceivably support every UCSC chainfile offering, but for now, we'll
