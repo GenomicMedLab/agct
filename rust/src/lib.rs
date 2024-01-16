@@ -1,8 +1,8 @@
 //! Provide Rust-based chainfile wrapping classes.
 use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
-use pyo3::exceptions::{PyException, PyFileNotFoundError, PyValueError, PyKeyError};
 use pyo3::create_exception;
+use pyo3::exceptions::{PyException, PyFileNotFoundError, PyKeyError, PyValueError};
 use pyo3::prelude::*;
 use std::fs::File;
 use std::io::BufReader;
@@ -59,9 +59,11 @@ impl ChainLifter {
                     ]
                 })
                 .collect());
-
         } else {
-            Err(NoLiftoverError::new_err(format!("No liftover available for \"{}\" on \"{}\"", chrom, pos)))
+            Err(NoLiftoverError::new_err(format!(
+                "No liftover available for \"{}\" on \"{}\"",
+                chrom, pos
+            )))
         }
     }
 }

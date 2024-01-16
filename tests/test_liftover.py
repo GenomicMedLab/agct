@@ -45,7 +45,6 @@ def test_hg38_to_hg19():
     assert len(result) == 1
     assert result[0] == ["chr7", "140459620", "+"]
 
-
     result = ch.convert_coordinate("chr7", 60878240)
     assert result is not None
     assert len(result) == 1
