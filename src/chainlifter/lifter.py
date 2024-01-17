@@ -1,7 +1,7 @@
 """Perform chainfile-driven liftover."""
-from enum import StrEnum
+from enum import Enum
 from pathlib import Path
-from typing import Callable
+from typing import Callable, List, Optional
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -10,14 +10,14 @@ from wags_tails.utils.storage import get_data_dir
 import chainlifter._core as _core
 
 
-class Strand(StrEnum):
+class Strand(str, Enum):
     """Constrain strand values."""
 
     POSITIVE = "+"
     NEGATIVE = "-"
 
 
-class Genome(StrEnum):
+class Genome(str, Enum):
     """Constrain genome values.
 
     We could conceivably support every UCSC chainfile offering, but for now, we'll
@@ -81,7 +81,7 @@ class ChainLifter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> str:
+    ) -> Optional[List[List[str]]]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -100,4 +100,10 @@ class ChainLifter:
         :param strand: query strand (``"+"`` by default).
         :return: first match TODO return whole list
         """
-        return self._chainlifter.lift(chrom, pos, strand)
+        try:
+            result: Optional[List[List[str]]] = self._chainlifter.lift(
+                chrom, pos, strand
+            )
+        except _core.NoLiftoverError:
+            result = None
+        return result

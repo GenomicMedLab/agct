@@ -11,7 +11,7 @@ from chainlifter.lifter import ChainLifter
 ch = ChainLifter("hg38", "hg19")
 ```
 
-Call ``convert_coordinate``:
+Call ``convert_coordinate()``:
 
 ```python3
 ch.convert_coordinate("chr7", 140453136, "+")
@@ -27,11 +27,23 @@ Create a virtual environment and install developer dependencies:
 ```shell
 python3 -m virtualenv venv
 source venv/bin/activate
-python3 -m pip install -e '.[dev]'
+python3 -m pip install -e '.[dev,tests]'
+```
+
+Be sure to install pre-commit hooks:
+
+```shell
+pre-commit install
 ```
 
 This installs Python code as editable, but after any changes to Rust code, ``maturin develop`` must be run:
 
 ```shell
 maturin develop
+```
+
+Run tests with `pytest`:
+
+```shell
+pytest
 ```

@@ -27,7 +27,7 @@ classifiers = [
 dependencies = ["wags-tails"]
 
 [project.optional-dependencies]
-test = [
+tests = [
     "pytest",
     "pytest-cov"
 ]
@@ -52,6 +52,13 @@ build-backend = "maturin"
 features = ["pyo3/extension-module"]
 module-name = "chainlifter._core"
 python-source = "src"
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
 
 [tool.ruff]
 src = ["src"]
