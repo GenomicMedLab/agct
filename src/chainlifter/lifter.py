@@ -1,13 +1,16 @@
 """Perform chainfile-driven liftover."""
+import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
 import chainlifter._core as _core
+
+_logger = logging.getLogger(__name__)
 
 
 class Strand(str, Enum):
@@ -38,6 +41,8 @@ class ChainLifter:
 
         :param from_db: database name, e.g. ``"19"``
         :param to_db: database name, e.g. ``"38"``
+        :raise FileNotFoundError: if unable to open corresponding chainfile
+        :raise _core.ChainfileError: if unable to read chainfile (i.e. it's invalid)
         """
         if from_db == to_db:
             raise ValueError("Liftover must be to/from different sources.")
@@ -53,7 +58,14 @@ class ChainLifter:
             data_dir=get_data_dir() / "ucsc-chainfile",
         )
         file, _ = data_handler.get_latest()
-        self._chainlifter = _core.ChainLifter(str(file.absolute()))
+        try:
+            self._chainlifter = _core.ChainLifter(str(file.absolute()))
+        except FileNotFoundError as e:
+            _logger.error("Unable to open chainfile located at %s", file.absolute())
+            raise e
+        except _core.ChainfileError as e:
+            _logger.error("Error reading chainfile located at %s", file.absolute())
+            raise e
 
     @staticmethod
     def _download_function_builder(from_db: Genome, to_db: Genome) -> Callable:
@@ -81,7 +93,7 @@ class ChainLifter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> Optional[List[List[str]]]:
+    ) -> List[List[str]]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -98,12 +110,18 @@ class ChainLifter:
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
         :param pos: query position
         :param strand: query strand (``"+"`` by default).
-        :return: first match TODO return whole list
+        :return: list of coordinate matches (possibly empty)
         """
         try:
-            result: Optional[List[List[str]]] = self._chainlifter.lift(
-                chrom, pos, strand
-            )
+            result = self._chainlifter.lift(chrom, pos, strand)
         except _core.NoLiftoverError:
-            result = None
+            result = []
+        except _core.ChainfileError:
+            _logger.error(
+                "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, %s, %s)",
+                chrom,
+                pos,
+                strand,
+            )
+            result = []
         return result

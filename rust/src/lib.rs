@@ -6,9 +6,10 @@ use pyo3::exceptions::{PyException, PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use std::fs::File;
 use std::io::BufReader;
-use std::path::Path;
 
 create_exception!(chainlifter, NoLiftoverError, PyException);
+create_exception!(chainlifter, ChainfileError, PyException);
+create_exception!(chainlifter, StrandValueError, PyException);
 
 /// Define core ChainLifter class to be used by Python interface.
 /// Effectively just a wrapper on top of the chainfile crate's Machine struct.
@@ -21,14 +22,20 @@ pub struct ChainLifter {
 impl ChainLifter {
     #[new]
     pub fn new(chainfile_path: &str) -> PyResult<ChainLifter> {
-        if !Path::new(&chainfile_path).exists() {
-            return Err(PyFileNotFoundError::new_err("Chainfile doesn't exist"));
-        }
-        let data = BufReader::new(File::open(chainfile_path).unwrap());
+        let Ok(chainfile_file) = File::open(chainfile_path) else {
+            return Err(PyFileNotFoundError::new_err(format!(
+                "Unable to open chainfile located at \"{}\"",
+                &chainfile_path
+            )));
+        };
+        let data = BufReader::new(chainfile_file);
         let reader = chain::Reader::new(data);
-        let machine = chain::liftover::machine::Builder
-            .try_build_from(reader)
-            .unwrap();
+        let Ok(machine) = chain::liftover::machine::Builder.try_build_from(reader) else {
+            return Err(ChainfileError::new_err(format!(
+                "Encountered error while reading chainfile at \"{}\"",
+                &chainfile_path
+            )));
+        };
         Ok(ChainLifter { machine })
     }
 
@@ -44,12 +51,20 @@ impl ChainLifter {
                 strand
             )));
         };
+        // safe to unwrap coordinates because `pos` is always an int
         let start = Coordinate::try_new(chrom, pos, parsed_strand.clone()).unwrap();
         let end = Coordinate::try_new(chrom, pos + 1, parsed_strand.clone()).unwrap();
 
-        let interval = Interval::try_new(start, end).unwrap();
+        let Ok(interval) = Interval::try_new(start, end) else {
+            return Err(ChainfileError::new_err(format!(
+                "Chainfile yielded invalid interval from coordinates: \"{}\" (\"{}\", \"{}\")",
+                &chrom,
+                pos,
+                pos + 1
+            )));
+        };
         if let Some(liftover_result) = self.machine.liftover(&interval) {
-            return Ok(liftover_result
+            Ok(liftover_result
                 .iter()
                 .map(|r| {
                     vec![
@@ -58,7 +73,7 @@ impl ChainLifter {
                         r.query().strand().to_string(),
                     ]
                 })
-                .collect());
+                .collect())
         } else {
             Err(NoLiftoverError::new_err(format!(
                 "No liftover available for \"{}\" on \"{}\"",
@@ -74,5 +89,7 @@ impl ChainLifter {
 fn chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<ChainLifter>()?;
     m.add("NoLiftoverError", _py.get_type::<NoLiftoverError>())?;
+    m.add("ChainfileError", _py.get_type::<ChainfileError>())?;
+    m.add("StrandValueError", _py.get_type::<StrandValueError>())?;
     Ok(())
 }
