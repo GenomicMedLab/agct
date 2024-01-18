@@ -124,4 +124,6 @@ class ChainLifter:
                 strand,
             )
             result = None
+        if result and len(result) > 1:
+            _logger.info("Received multiple liftover matches for %s on %s %s", pos, chrom, strand)
         return result
