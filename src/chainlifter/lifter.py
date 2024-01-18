@@ -2,7 +2,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import Callable, List
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -93,7 +93,7 @@ class ChainLifter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> Optional[List[List[str]]]:
+    ) -> List[List[str]]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -110,12 +110,12 @@ class ChainLifter:
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
         :param pos: query position
         :param strand: query strand (``"+"`` by default).
-        :return: first match TODO return whole list
+        :return: list of coordinate matches (possibly empty)
         """
         try:
             result = self._chainlifter.lift(chrom, pos, strand)
         except _core.NoLiftoverError:
-            result = None
+            result = []
         except _core.ChainfileError:
             _logger.error(
                 "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, %s, %s)",
@@ -123,7 +123,5 @@ class ChainLifter:
                 pos,
                 strand,
             )
-            result = None
-        if result and len(result) > 1:
-            _logger.info("Received multiple liftover matches for %s on %s %s", pos, chrom, strand)
+            result = []
         return result
