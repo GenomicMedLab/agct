@@ -22,7 +22,7 @@ pub struct ChainLifter {
 impl ChainLifter {
     #[new]
     pub fn new(chainfile_path: &str) -> PyResult<ChainLifter> {
-        let Ok(chainfile_file) = File::open(&chainfile_path) else {
+        let Ok(chainfile_file) = File::open(chainfile_path) else {
             return Err(PyFileNotFoundError::new_err(format!(
                 "Unable to open chainfile located at \"{}\"",
                 &chainfile_path
@@ -30,8 +30,7 @@ impl ChainLifter {
         };
         let data = BufReader::new(chainfile_file);
         let reader = chain::Reader::new(data);
-        let Ok(machine) = chain::liftover::machine::Builder::default().try_build_from(reader)
-        else {
+        let Ok(machine) = chain::liftover::machine::Builder.try_build_from(reader) else {
             return Err(ChainfileError::new_err(format!(
                 "Encountered error while reading chainfile at \"{}\"",
                 &chainfile_path
