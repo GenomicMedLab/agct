@@ -23,12 +23,19 @@ impl ChainLifter {
     #[new]
     pub fn new(chainfile_path: &str) -> PyResult<ChainLifter> {
         let Ok(chainfile_file) = File::open(&chainfile_path) else {
-            return Err(PyFileNotFoundError::new_err(format!("Unable to open chainfile located at \"{}\"", &chainfile_path)));
+            return Err(PyFileNotFoundError::new_err(format!(
+                "Unable to open chainfile located at \"{}\"",
+                &chainfile_path
+            )));
         };
         let data = BufReader::new(chainfile_file);
         let reader = chain::Reader::new(data);
-        let Ok(machine) = chain::liftover::machine::Builder::default().try_build_from(reader) else {
-            return Err(ChainfileError::new_err(format!("Encountered error while reading chainfile at \"{}\"", &chainfile_path)));
+        let Ok(machine) = chain::liftover::machine::Builder::default().try_build_from(reader)
+        else {
+            return Err(ChainfileError::new_err(format!(
+                "Encountered error while reading chainfile at \"{}\"",
+                &chainfile_path
+            )));
         };
         Ok(ChainLifter { machine })
     }
@@ -50,10 +57,24 @@ impl ChainLifter {
         let end = Coordinate::try_new(chrom, pos + 1, parsed_strand.clone()).unwrap();
 
         let Ok(interval) = Interval::try_new(start, end) else {
-            return Err(ChainfileError::new_err(format!("Chainfile yielded invalid interval from coordinates: \"{}\" (\"{}\", \"{}\")", &chrom, pos, pos + 1)));
+            return Err(ChainfileError::new_err(format!(
+                "Chainfile yielded invalid interval from coordinates: \"{}\" (\"{}\", \"{}\")",
+                &chrom,
+                pos,
+                pos + 1
+            )));
         };
         if let Some(liftover_result) = self.machine.liftover(&interval) {
-            Ok(liftover_result.iter().map(|r| { vec![r.query().contig().to_string(), r.query().start().position().to_string(), r.query().strand().to_string()]}).collect())
+            Ok(liftover_result
+                .iter()
+                .map(|r| {
+                    vec![
+                        r.query().contig().to_string(),
+                        r.query().start().position().to_string(),
+                        r.query().strand().to_string(),
+                    ]
+                })
+                .collect())
         } else {
             Err(NoLiftoverError::new_err(format!(
                 "No liftover available for \"{}\" on \"{}\"",
