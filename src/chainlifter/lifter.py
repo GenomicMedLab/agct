@@ -61,10 +61,10 @@ class ChainLifter:
         try:
             self._chainlifter = _core.ChainLifter(str(file.absolute()))
         except FileNotFoundError as e:
-            _logger.critical("Unable to open chainfile located at %s", file.absolute())
+            _logger.error("Unable to open chainfile located at %s", file.absolute())
             raise e
         except _core.ChainfileError as e:
-            _logger.critical("Error reading chainfile located at %s", file.absolute())
+            _logger.error("Error reading chainfile located at %s", file.absolute())
             raise e
 
     @staticmethod
