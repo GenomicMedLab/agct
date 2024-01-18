@@ -6,6 +6,7 @@ import pytest
 
 DATA_DIR = Path(__file__).parents[0] / "data"
 
+
 def pytest_sessionstart(session):
     """Perform actions after Session object is created.
 
