@@ -76,3 +76,6 @@ docs/_build/
 *.chain
 
 Cargo.lock
+
+# jupyter
+.ipynb_checkpoints
