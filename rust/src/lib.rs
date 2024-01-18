@@ -2,7 +2,7 @@
 use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
 use pyo3::create_exception;
-use pyo3::exceptions::{PyException, PyFileNotFoundError, PyKeyError, PyValueError};
+use pyo3::exceptions::{PyException, PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
 use std::fs::File;
 use std::io::BufReader;
@@ -24,9 +24,9 @@ impl ChainLifter {
         if !Path::new(&chainfile_path).exists() {
             return Err(PyFileNotFoundError::new_err("Chainfile doesn't exist"));
         }
-        let data = BufReader::new(File::open(&chainfile_path).unwrap());
+        let data = BufReader::new(File::open(chainfile_path).unwrap());
         let reader = chain::Reader::new(data);
-        let machine = chain::liftover::machine::Builder::default()
+        let machine = chain::liftover::machine::Builder
             .try_build_from(reader)
             .unwrap();
         Ok(ChainLifter { machine })

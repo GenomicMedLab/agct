@@ -9,11 +9,12 @@ repos:
 - repo: https://github.com/astral-sh/ruff-pre-commit
   rev: v0.1.13
   hooks:
+    - id: ruff-format
     - id: ruff
       args: [ --fix, --exit-non-zero-on-fix ]
 - repo: https://github.com/doublify/pre-commit-rust
   rev: v1.0
   hooks:
   - id: fmt
-    entry: bash -c 'cd rust'
+    entry: bash -c 'cd rust && cargo fmt'
     args: ['--verbose', '--']
