@@ -2,7 +2,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List
+from typing import Callable, List, Tuple
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -93,7 +93,7 @@ class ChainLifter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> List[List[str]]:
+    ) -> List[Tuple[str, int, Strand]]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -124,19 +124,17 @@ class ChainLifter:
                 strand,
             )
             results = []
-        if results:
-            formatted_results = []
-            for result in results:
-                try:
-                    pos = int(result[1])
-                except ValueError:
-                    _logger.error("Got invalid position value in %s", result)
-                    continue
-                try:
-                    strand = Strand(result[2])
-                except ValueError:
-                    _logger.error("Got invalid Strand value in %s", result)
-                    continue
-                formatted_results.append((result[0], pos, strand))
-            results = formatted_results
-        return results
+        formatted_results: List[Tuple[str, int, Strand]] = []
+        for result in results:
+            try:
+                pos = int(result[1])
+            except ValueError:
+                _logger.error("Got invalid position value in %s", result)
+                continue
+            try:
+                strand = Strand(result[2])
+            except ValueError:
+                _logger.error("Got invalid Strand value in %s", result)
+                continue
+            formatted_results.append((result[0], pos, strand))
+        return formatted_results
