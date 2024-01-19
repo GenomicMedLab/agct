@@ -113,9 +113,9 @@ class ChainLifter:
         :return: list of coordinate matches (possibly empty)
         """
         try:
-            result = self._chainlifter.lift(chrom, pos, strand)
+            results = self._chainlifter.lift(chrom, pos, strand)
         except _core.NoLiftoverError:
-            result = []
+            results = []
         except _core.ChainfileError:
             _logger.error(
                 "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, %s, %s)",
@@ -123,5 +123,20 @@ class ChainLifter:
                 pos,
                 strand,
             )
-            result = []
-        return result
+            results = []
+        if results:
+            formatted_results = []
+            for result in results:
+                try:
+                    pos = int(result[1])
+                except ValueError:
+                    _logger.error("Got invalid position value in %s", result)
+                    continue
+                try:
+                    strand = Strand(result[2])
+                except ValueError:
+                    _logger.error("Got invalid Strand value in %s", result)
+                    continue
+                formatted_results.append((result[0], pos, strand))
+            results = formatted_results
+        return results
