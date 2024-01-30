@@ -86,7 +86,7 @@ impl Converter {
 /// agct._core Python module. Collect Python-facing methods.
 #[pymodule]
 #[pyo3(name = "_core")]
-fn chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn agct(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Converter>()?;
     m.add("NoLiftoverError", _py.get_type::<NoLiftoverError>())?;
     m.add("ChainfileError", _py.get_type::<ChainfileError>())?;
