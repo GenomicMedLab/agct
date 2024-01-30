@@ -8,7 +8,7 @@ from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
-import chainlifter._core as _core
+import agct._core as _core
 
 _logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class Genome(str, Enum):
     HG19 = "hg19"
 
 
-class ChainLifter:
+class Converter:
     """Chainfile-based liftover provider for a single sequence to sequence
     association.
     """
@@ -59,7 +59,7 @@ class ChainLifter:
         )
         file, _ = data_handler.get_latest()
         try:
-            self._chainlifter = _core.ChainLifter(str(file.absolute()))
+            self._converter = _core.Converter(str(file.absolute()))
         except FileNotFoundError as e:
             _logger.error("Unable to open chainfile located at %s", file.absolute())
             raise e
@@ -100,10 +100,10 @@ class ChainLifter:
 
         .. code-block:: python
 
-           from chainlifter.lifter import ChainLifter, Strand
+           from agct import Converter, Strand
 
-           lifter = ChainLifter("hg19", "hg38")
-           lifter.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
+           c = Converter("hg19", "hg38")
+           c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
            # returns [['chr7', '140753336', '+']]
 
 
@@ -113,7 +113,7 @@ class ChainLifter:
         :return: list of coordinate matches (possibly empty)
         """
         try:
-            results = self._chainlifter.lift(chrom, pos, strand)
+            results = self._converter.lift(chrom, pos, strand)
         except _core.NoLiftoverError:
             results = []
         except _core.ChainfileError:

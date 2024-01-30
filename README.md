@@ -1,20 +1,22 @@
-Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool. Name forthcoming.
+# agct: Another Genome Conversion Tool
 
-Status: very, very preliminary.
+Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate. Enables significantly faster chainfile loading from cold start (see `analysis/`).
+
+Status: alpha.
 
 ## Usage
 
 Initialize a class instance:
 
 ```python3
-from chainlifter.lifter import ChainLifter
-ch = ChainLifter("hg38", "hg19")
+from agct import Converter
+c = Converter("hg38", "hg19")
 ```
 
 Call ``convert_coordinate()``:
 
 ```python3
-ch.convert_coordinate("chr7", 140453136, "+")
+c.convert_coordinate("chr7", 140453136, "+")
 # [['chr7', '140152936', '+']]
 ```
 

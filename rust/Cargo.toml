@@ -1,10 +1,10 @@
 [package]
-name = "chainlifter"
+name = "agct"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "chainlifter"
+name = "agct"
 crate-type = ["cdylib"]
 
 [dependencies]
