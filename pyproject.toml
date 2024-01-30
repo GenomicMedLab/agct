@@ -38,11 +38,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jsstevenson/chainlifter"
-Documentation = "https://github.com/jsstevenson/chainlifter"
-Changelog = "https://github.com/jsstevenson/chainlifter/releases"
-Source = "https://github.com/jsstevenson/chainlifter"
-"Bug Tracker" = "https://github.com/jsstevenson/chainlifter/issues"
+Homepage = "https://github.com/genomicmedlab/chainlifter"
+Documentation = "https://github.com/genomicmedlab/chainlifter"
+Changelog = "https://github.com/genomicmedlab/chainlifter/releases"
+Source = "https://github.com/genomicmedlab/chainlifter"
+"Bug Tracker" = "https://github.com/genomicmedlab/chainlifter/issues"
 
 [build-system]
 requires = ["maturin>=1.2,<2.0"]
