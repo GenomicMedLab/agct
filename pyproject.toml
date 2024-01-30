@@ -39,7 +39,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/jsstevenson/chainlifter"
-Documentation = ""
+Documentation = "https://github.com/jsstevenson/chainlifter"
 Changelog = "https://github.com/jsstevenson/chainlifter/releases"
 Source = "https://github.com/jsstevenson/chainlifter"
 "Bug Tracker" = "https://github.com/jsstevenson/chainlifter/issues"
