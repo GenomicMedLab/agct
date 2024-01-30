@@ -7,21 +7,21 @@ use pyo3::prelude::*;
 use std::fs::File;
 use std::io::BufReader;
 
-create_exception!(chainlifter, NoLiftoverError, PyException);
-create_exception!(chainlifter, ChainfileError, PyException);
-create_exception!(chainlifter, StrandValueError, PyException);
+create_exception!(agct, NoLiftoverError, PyException);
+create_exception!(agct, ChainfileError, PyException);
+create_exception!(agct, StrandValueError, PyException);
 
-/// Define core ChainLifter class to be used by Python interface.
+/// Define core Converter class to be used by Python interface.
 /// Effectively just a wrapper on top of the chainfile crate's Machine struct.
 #[pyclass]
-pub struct ChainLifter {
+pub struct Converter {
     pub machine: chain::liftover::machine::Machine,
 }
 
 #[pymethods]
-impl ChainLifter {
+impl Converter {
     #[new]
-    pub fn new(chainfile_path: &str) -> PyResult<ChainLifter> {
+    pub fn new(chainfile_path: &str) -> PyResult<Converter> {
         let Ok(chainfile_file) = File::open(chainfile_path) else {
             return Err(PyFileNotFoundError::new_err(format!(
                 "Unable to open chainfile located at \"{}\"",
@@ -36,7 +36,7 @@ impl ChainLifter {
                 &chainfile_path
             )));
         };
-        Ok(ChainLifter { machine })
+        Ok(Converter { machine })
     }
 
     /// Perform liftover
@@ -83,11 +83,11 @@ impl ChainLifter {
     }
 }
 
-/// ChainLifter Python module. Collect Python-facing methods.
+/// agct._core Python module. Collect Python-facing methods.
 #[pymodule]
 #[pyo3(name = "_core")]
-fn chainlifter(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    m.add_class::<ChainLifter>()?;
+fn agct(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    m.add_class::<Converter>()?;
     m.add("NoLiftoverError", _py.get_type::<NoLiftoverError>())?;
     m.add("ChainfileError", _py.get_type::<ChainfileError>())?;
     m.add("StrandValueError", _py.get_type::<StrandValueError>())?;

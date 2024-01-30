@@ -1,18 +1,16 @@
 [project]
-name = "chainlifter"
+name = "agct"
 version = "0.1.0"
 authors = [
     {name = "James Stevenson"}
 ]
-description = "Python frontend to Rust chainfile crate"
+description = "Another Genome Conversion Tool: Python frontend to Rust chainfile crate"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
@@ -38,11 +36,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/genomicmedlab/chainlifter"
-Documentation = "https://github.com/genomicmedlab/chainlifter"
-Changelog = "https://github.com/genomicmedlab/chainlifter/releases"
-Source = "https://github.com/genomicmedlab/chainlifter"
-"Bug Tracker" = "https://github.com/genomicmedlab/chainlifter/issues"
+Homepage = "https://github.com/genomicmedlab/agct"
+Documentation = "https://github.com/genomicmedlab/agct"
+Changelog = "https://github.com/genomicmedlab/agct/releases"
+Source = "https://github.com/genomicmedlab/agct"
+"Bug Tracker" = "https://github.com/genomicmedlab/agct/issues"
 
 [build-system]
 requires = ["maturin>=1.2,<2.0"]
@@ -50,7 +48,7 @@ build-backend = "maturin"
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
-module-name = "chainlifter._core"
+module-name = "agct._core"
 python-source = "src"
 
 [tool.pytest.ini_options]
