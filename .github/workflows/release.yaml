@@ -3,17 +3,13 @@
 #
 #    maturin generate-ci github
 #
-name: CI
+# Edited to incorporate genomicmedlab/software-templates Python template
+# See also https://www.maturin.rs/distribution#using-pypis-trusted-publishing
+name: Publish Python distribution to PyPI
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    tags:
-      - '*'
-  pull_request:
-  workflow_dispatch:
+  release:
+    types: [created]
 
 permissions:
   contents: read
@@ -105,6 +101,11 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/chainlifter
+    permissions:
+      id-token: write # IMPORTANT: mandatory for trusted publishing
     if: "startsWith(github.ref, 'refs/tags/')"
     needs: [linux, windows, macos, sdist]
     steps:
@@ -113,8 +114,6 @@ jobs:
           name: wheels
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         with:
           command: upload
           args: --non-interactive --skip-existing *
