@@ -104,7 +104,7 @@ class Converter:
 
            c = Converter("hg19", "hg38")
            c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
-           # returns [['chr7', '140753336', '+']]
+           # returns [['chr7', 140753336, '+']]
 
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
