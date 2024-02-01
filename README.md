@@ -32,7 +32,7 @@ Call ``convert_coordinate()``:
 
 ```python3
 c.convert_coordinate("chr7", 140453136, "+")
-# [['chr7', '140152936', '+']]
+# [['chr7', 140152936, '+']]
 ```
 
 ## Development
