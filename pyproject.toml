@@ -2,12 +2,10 @@
 name = "agct"
 version = "0.1.0-dev1"
 authors = [
-    {name = "James Stevenson"}
+    {name = "James Stevenson"},
+    {name = "Kori Kuzma"},
 ]
-description = "Another Genome Conversion Tool: Python frontend to Rust chainfile crate"
 readme = "README.md"
-license = {file = "LICENSE"}
-requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Programming Language :: Rust",
@@ -18,10 +16,14 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
 ]
+requires-python = ">=3.8"
+description = "Another Genome Conversion Tool: Python frontend to Rust chainfile crate"
+license = {file = "LICENSE"}
 dependencies = ["wags-tails"]
 
 [project.optional-dependencies]
