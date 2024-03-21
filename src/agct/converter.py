@@ -57,10 +57,12 @@ class Converter:
         """
         if not chainfile:
             if from_db is None and to_db is None:
-                raise ValueError("Must provide both `from_db` and `to_db`")
+                msg = "Must provide both `from_db` and `to_db`"
+                raise ValueError(msg)
 
             if from_db == to_db:
-                raise ValueError("Liftover must be to/from different sources.")
+                msg = "Liftover must be to/from different sources."
+                raise ValueError(msg)
 
             data_handler = CustomData(
                 f"chainfile_{from_db.value}_to_{to_db.value}",
