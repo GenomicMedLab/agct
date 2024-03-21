@@ -11,7 +11,13 @@ Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftov
 
 Enables significantly faster chainfile loading from cold start (see `analysis/`).
 
-Status: alpha.
+## Installation
+
+Install from [PyPI](https://pypi.org/project/agct/):
+
+```shell
+python3 -m pip install agct
+```
 
 ## Usage
 
@@ -22,11 +28,13 @@ from agct import Converter
 c = Converter("hg38", "hg19")
 ```
 
+> If a chainfile is unavailable locally, it's downloaded from UCSC and saved using the `wags-tails` package -- see the [configuration instructions](https://github.com/GenomicMedLab/wags-tails?tab=readme-ov-file#configuration) for information on how to designate a non-default storage location.
+
 Call ``convert_coordinate()``:
 
 ```python3
 c.convert_coordinate("chr7", 140453136, "+")
-# [['chr7', '140152936', '+']]
+# [['chr7', 140152936, '+']]
 ```
 
 ## Development
@@ -51,6 +59,19 @@ Be sure to install pre-commit hooks:
 
 ```shell
 pre-commit install
+```
+
+Check Python style with `ruff`:
+
+```shell
+python3 -m ruff format . && python3 -m ruff check --fix .
+```
+
+Use `cargo fmt` to check Rust style (must be run from within the `rust/` subdirectory):
+
+```shell
+cd rust/
+cargo fmt
 ```
 
 Run tests with `pytest`:

@@ -2,7 +2,7 @@
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Tuple
+from typing import Callable, List, Optional, Tuple
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -36,35 +36,51 @@ class Converter:
     association.
     """
 
-    def __init__(self, from_db: Genome, to_db: Genome) -> None:
+    def __init__(
+        self,
+        from_db: Optional[Genome] = None,
+        to_db: Optional[Genome] = None,
+        chainfile: Optional[str] = None,
+    ) -> None:
         """Initialize liftover instance.
 
-        :param from_db: database name, e.g. ``"19"``
-        :param to_db: database name, e.g. ``"38"``
+        :param from_db: database name, e.g. ``"19"``. Must be different than ``to_db``
+            If ``chainfile`` is provided, will ignore this argument
+        :param to_db: database name, e.g. ``"38"``. Must be different than ``from_db``
+            If ``chainfile`` is provided, will ignore this argument
+        :param chainfile: Path to chainfile
+            If not provided, must provide both ``from_db`` and ``to_db`` so that
+            ``wags-tails`` can download the corresponding chainfile
+        :raise ValueError: if required arguments are not passed or are invalid
         :raise FileNotFoundError: if unable to open corresponding chainfile
         :raise _core.ChainfileError: if unable to read chainfile (i.e. it's invalid)
         """
-        if from_db == to_db:
-            raise ValueError("Liftover must be to/from different sources.")
-        if not isinstance(from_db, Genome):
-            from_db = Genome(from_db)
-        if not isinstance(to_db, Genome):
-            to_db = Genome(to_db)
-        data_handler = CustomData(
-            f"chainfile_{from_db.value}_to_{to_db.value}",
-            "chain",
-            lambda: "",
-            self._download_function_builder(from_db, to_db),
-            data_dir=get_data_dir() / "ucsc-chainfile",
-        )
-        file, _ = data_handler.get_latest()
+        if not chainfile:
+            if from_db is None and to_db is None:
+                msg = "Must provide both `from_db` and `to_db`"
+                raise ValueError(msg)
+
+            if from_db == to_db:
+                msg = "Liftover must be to/from different sources."
+                raise ValueError(msg)
+
+            data_handler = CustomData(
+                f"chainfile_{from_db.value}_to_{to_db.value}",
+                "chain",
+                lambda: "",
+                self._download_function_builder(from_db, to_db),
+                data_dir=get_data_dir() / "ucsc-chainfile",
+            )
+            file, _ = data_handler.get_latest()
+            chainfile = str(file.absolute())
+
         try:
-            self._converter = _core.Converter(str(file.absolute()))
+            self._converter = _core.Converter(chainfile)
         except FileNotFoundError as e:
-            _logger.error("Unable to open chainfile located at %s", file.absolute())
+            _logger.error("Unable to open chainfile located at %s", chainfile)
             raise e
         except _core.ChainfileError as e:
-            _logger.error("Error reading chainfile located at %s", file.absolute())
+            _logger.error("Error reading chainfile located at %s", chainfile)
             raise e
 
     @staticmethod
@@ -104,7 +120,7 @@ class Converter:
 
            c = Converter("hg19", "hg38")
            c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
-           # returns [['chr7', '140753336', '+']]
+           # returns [['chr7', 140753336, '+']]
 
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
