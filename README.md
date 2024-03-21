@@ -3,11 +3,13 @@
 [![image](https://img.shields.io/pypi/v/agct.svg)](https://pypi.python.org/pypi/agct)
 [![image](https://img.shields.io/pypi/l/agct.svg)](https://pypi.python.org/pypi/agct)
 [![image](https://img.shields.io/pypi/pyversions/agct.svg)](https://pypi.python.org/pypi/agct)
-[![Actions status](https://github.com/genomicmedlab/agct/workflows/CI/badge.svg)](https://github.com/genomicmedlab/agct/actions)
+[![Actions status](https://github.com/genomicmedlab/agct/actions/workflows/checks.yaml/badge.svg)](https://github.com/genomicmedlab/agct/actions/checks.yaml)
 
 <!-- description -->
-A drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate. Enables significantly faster chainfile loading from cold start (see `analysis/`).
-<!-- /description -->
+Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate.
+<!-- description -->
+
+Enables significantly faster chainfile loading from cold start (see `analysis/`).
 
 ## Installation
 
@@ -47,16 +49,16 @@ source venv/bin/activate
 python3 -m pip install -e '.[dev,tests]'
 ```
 
+This installs Python code as editable, but after any changes to Rust code, run ``maturin develop`` to rebuild the Rust binary:
+
+```shell
+maturin develop
+```
+
 Be sure to install pre-commit hooks:
 
 ```shell
 pre-commit install
-```
-
-This installs Python code as editable, but after any changes to Rust code, ``maturin develop`` must be run:
-
-```shell
-maturin develop
 ```
 
 Check Python style with `ruff`:
