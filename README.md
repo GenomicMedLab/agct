@@ -1,8 +1,21 @@
 # agct: Another Genome Conversion Tool
 
-Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate. Enables significantly faster chainfile loading from cold start (see `analysis/`).
+[![image](https://img.shields.io/pypi/v/agct.svg)](https://pypi.python.org/pypi/agct)
+[![image](https://img.shields.io/pypi/l/agct.svg)](https://pypi.python.org/pypi/agct)
+[![image](https://img.shields.io/pypi/pyversions/agct.svg)](https://pypi.python.org/pypi/agct)
+[![Actions status](https://github.com/genomicmedlab/agct/workflows/CI/badge.svg)](https://github.com/genomicmedlab/agct/actions)
 
-Status: alpha.
+<!-- description -->
+A drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate. Enables significantly faster chainfile loading from cold start (see `analysis/`).
+<!-- /description -->
+
+## Installation
+
+Install from [PyPI](https://pypi.org/project/agct/):
+
+```shell
+python3 -m pip install agct
+```
 
 ## Usage
 
@@ -13,11 +26,13 @@ from agct import Converter
 c = Converter("hg38", "hg19")
 ```
 
+> If a chainfile is unavailable locally, it's downloaded from UCSC and saved using the `wags-tails` package -- see the [configuration instructions](https://github.com/GenomicMedLab/wags-tails?tab=readme-ov-file#configuration) for information on how to designate a non-default storage location.
+
 Call ``convert_coordinate()``:
 
 ```python3
 c.convert_coordinate("chr7", 140453136, "+")
-# [['chr7', '140152936', '+']]
+# [['chr7', 140152936, '+']]
 ```
 
 ## Development
@@ -42,6 +57,19 @@ This installs Python code as editable, but after any changes to Rust code, ``mat
 
 ```shell
 maturin develop
+```
+
+Check Python style with `ruff`:
+
+```shell
+python3 -m ruff format . && python3 -m ruff check --fix .
+```
+
+Use `cargo fmt` to check Rust style (must be run from within the `rust/` subdirectory):
+
+```shell
+cd rust/
+cargo fmt
 ```
 
 Run tests with `pytest`:
