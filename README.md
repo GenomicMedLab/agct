@@ -41,16 +41,16 @@ source venv/bin/activate
 python3 -m pip install -e '.[dev,tests]'
 ```
 
+This installs Python code as editable, but after any changes to Rust code, run ``maturin develop`` to rebuild the Rust binary:
+
+```shell
+maturin develop
+```
+
 Be sure to install pre-commit hooks:
 
 ```shell
 pre-commit install
-```
-
-This installs Python code as editable, but after any changes to Rust code, ``maturin develop`` must be run:
-
-```shell
-maturin develop
 ```
 
 Run tests with `pytest`:
