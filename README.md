@@ -1,6 +1,15 @@
 # agct: Another Genome Conversion Tool
 
-Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate. Enables significantly faster chainfile loading from cold start (see `analysis/`).
+[![image](https://img.shields.io/pypi/v/agct.svg)](https://pypi.python.org/pypi/agct)
+[![image](https://img.shields.io/pypi/l/agct.svg)](https://pypi.python.org/pypi/agct)
+[![image](https://img.shields.io/pypi/pyversions/agct.svg)](https://pypi.python.org/pypi/agct)
+[![Actions status](https://github.com/genomicmedlab/agct/actions/workflows/checks.yaml/badge.svg)](https://github.com/genomicmedlab/agct/actions/checks.yaml)
+
+<!-- description -->
+Drop-in replacement for the [pyliftover](https://github.com/konstantint/pyliftover) tool, using the St. Jude's [chainfile](https://docs.rs/chainfile/latest/chainfile/) crate.
+<!-- description -->
+
+Enables significantly faster chainfile loading from cold start (see `analysis/`).
 
 Status: alpha.
 
