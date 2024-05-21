@@ -1,8 +1,8 @@
 """Perform chainfile-driven liftover."""
 import logging
+from collections.abc import Callable
 from enum import Enum
 from pathlib import Path
-from typing import Callable, List, Optional, Tuple
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -38,9 +38,9 @@ class Converter:
 
     def __init__(
         self,
-        from_db: Optional[Genome] = None,
-        to_db: Optional[Genome] = None,
-        chainfile: Optional[str] = None,
+        from_db: Genome | None = None,
+        to_db: Genome | None = None,
+        chainfile: str | None = None,
     ) -> None:
         """Initialize liftover instance.
 
@@ -109,7 +109,7 @@ class Converter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> List[Tuple[str, int, Strand]]:
+    ) -> list[tuple[str, int, Strand]]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -140,7 +140,7 @@ class Converter:
                 strand,
             )
             results = []
-        formatted_results: List[Tuple[str, int, Strand]] = []
+        formatted_results: list[tuple[str, int, Strand]] = []
         for result in results:
             try:
                 pos = int(result[1])
