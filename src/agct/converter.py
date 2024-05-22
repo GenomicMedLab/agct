@@ -68,13 +68,13 @@ class Converter:
                 try:
                     from_db = Genome(from_db)
                 except ValueError as e:
-                    msg = f"Unable to coerce from_db value '{from_db}' to a known genome: {list(Genome)}"
+                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Genome)}"
                     raise ValueError(msg) from e
             if isinstance(to_db, str):
                 try:
                     to_db = Genome(to_db)
                 except ValueError as e:
-                    msg = f"Unable to coerce to_db value '{to_db}' to a known genome: {list(Genome)}"
+                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Genome)}"
                     raise ValueError(msg) from e
 
             data_handler = CustomData(
