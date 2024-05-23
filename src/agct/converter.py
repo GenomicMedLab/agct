@@ -38,15 +38,15 @@ class Converter:
 
     def __init__(
         self,
-        from_db: Genome | None = None,
-        to_db: Genome | None = None,
+        from_db: Genome | str | None = None,
+        to_db: Genome | str | None = None,
         chainfile: str | None = None,
     ) -> None:
         """Initialize liftover instance.
 
-        :param from_db: database name, e.g. ``"19"``. Must be different than ``to_db``
+        :param from_db: database name, e.g. ``"hg19"``. Must be different than ``to_db``
             If ``chainfile`` is provided, will ignore this argument
-        :param to_db: database name, e.g. ``"38"``. Must be different than ``from_db``
+        :param to_db: database name, e.g. ``"hg38"``. Must be different than ``from_db``
             If ``chainfile`` is provided, will ignore this argument
         :param chainfile: Path to chainfile
             If not provided, must provide both ``from_db`` and ``to_db`` so that
@@ -56,13 +56,26 @@ class Converter:
         :raise _core.ChainfileError: if unable to read chainfile (i.e. it's invalid)
         """
         if not chainfile:
-            if from_db is None and to_db is None:
+            if from_db is None or to_db is None:
                 msg = "Must provide both `from_db` and `to_db`"
                 raise ValueError(msg)
 
             if from_db == to_db:
                 msg = "Liftover must be to/from different sources."
                 raise ValueError(msg)
+
+            if isinstance(from_db, str):
+                try:
+                    from_db = Genome(from_db)
+                except ValueError as e:
+                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Genome)}"
+                    raise ValueError(msg) from e
+            if isinstance(to_db, str):
+                try:
+                    to_db = Genome(to_db)
+                except ValueError as e:
+                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Genome)}"
+                    raise ValueError(msg) from e
 
             data_handler = CustomData(
                 f"chainfile_{from_db.value}_to_{to_db.value}",
