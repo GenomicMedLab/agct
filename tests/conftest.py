@@ -1,4 +1,5 @@
 """Configure tests."""
+
 import os
 from pathlib import Path
 
@@ -7,7 +8,7 @@ import pytest
 DATA_DIR = Path(__file__).parents[0] / "data"
 
 
-def pytest_sessionstart(session):
+def pytest_sessionstart(session):  # noqa: ARG001
     """Perform actions after Session object is created.
 
     * set test data directory

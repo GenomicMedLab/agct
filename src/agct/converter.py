@@ -1,4 +1,5 @@
 """Perform chainfile-driven liftover."""
+
 import logging
 from collections.abc import Callable
 from enum import Enum
@@ -109,7 +110,7 @@ class Converter:
         :return: Function that downloads appropriate chainfile from UCSC
         """
 
-        def _download_data(version: str, file: Path) -> None:
+        def _download_data(version: str, file: Path) -> None:  # noqa: ARG001
             """Download and gunzip chainfile from UCSC.
 
             :param version: not used

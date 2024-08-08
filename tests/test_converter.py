@@ -1,4 +1,5 @@
 """Module for testing Converter initialization"""
+
 import re
 
 import pytest
