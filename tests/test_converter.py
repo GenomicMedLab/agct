@@ -1,5 +1,7 @@
 """Module for testing Converter initialization"""
 
+import re
+
 import pytest
 from tests.conftest import DATA_DIR
 
@@ -20,3 +22,11 @@ def test_invalid():
 
     with pytest.raises(ValueError, match="Liftover must be to/from different sources."):
         Converter(Genome.HG19, Genome.HG19)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "Unable to coerce to_db value 'hg18' to a known reference genome: [<Genome.HG38: 'hg38'>, <Genome.HG19: 'hg19'>]"
+        ),
+    ):
+        Converter(Genome.HG19, "hg18")
