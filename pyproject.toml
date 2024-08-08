@@ -31,7 +31,7 @@ tests = [
 ]
 dev = [
     "maturin",
-    "ruff==0.2.0",
+    "ruff==0.5.0",
     "pre-commit",
 ]
 
@@ -78,6 +78,8 @@ select = [
     "DTZ",  # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
     "T10",  # https://docs.astral.sh/ruff/rules/#flake8-datetimez-dtz
     "EM",  # https://docs.astral.sh/ruff/rules/#flake8-errmsg-em
+    "LOG",  # https://docs.astral.sh/ruff/rules/#flake8-logging-log
+    "INP",  # https://docs.astral.sh/ruff/rules/#flake8-no-pep420-inp
     "G",  # https://docs.astral.sh/ruff/rules/#flake8-logging-format-g
     "PIE",  # https://docs.astral.sh/ruff/rules/#flake8-pie-pie
     "T20",  # https://docs.astral.sh/ruff/rules/#flake8-print-t20
@@ -85,9 +87,13 @@ select = [
     "Q",  # https://docs.astral.sh/ruff/rules/#flake8-quotes-q
     "RSE",  # https://docs.astral.sh/ruff/rules/#flake8-raise-rse
     "RET",  # https://docs.astral.sh/ruff/rules/#flake8-return-ret
+    "SLF",  # https://docs.astral.sh/ruff/rules/#flake8-self-slf
     "SIM",  # https://docs.astral.sh/ruff/rules/#flake8-simplify-sim
+    "ARG",  # https://docs.astral.sh/ruff/rules/#flake8-unused-arguments-arg
     "PTH",  # https://docs.astral.sh/ruff/rules/#flake8-use-pathlib-pth
     "PGH",  # https://docs.astral.sh/ruff/rules/#pygrep-hooks-pgh
+    "PERF",  # https://docs.astral.sh/ruff/rules/#perflint-perf
+    "FURB",  # https://docs.astral.sh/ruff/rules/#refurb-furb
     "RUF",  # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
 ]
 fixable = [
@@ -98,15 +104,19 @@ fixable = [
     "ANN",
     "B",
     "C4",
+    "LOG",
     "G",
     "PIE",
     "PT",
     "RSE",
     "SIM",
+    "PERF",
+    "FURB",
     "RUF"
 ]
-# ANN101 - missing-type-self
 # ANN003 - missing-type-kwargs
+# ANN101 - missing-type-self
+# ANN102 - missing-type-cls
 # D203 - one-blank-line-before-class
 # D205 - blank-line-after-summary
 # D206 - indent-with-spaces*
@@ -122,7 +132,7 @@ fixable = [
 # S321 - suspicious-ftp-lib-usage
 # *ignored for compatibility with formatter
 ignore = [
-    "ANN101", "ANN003",
+    "ANN003", "ANN101", "ANN102",
     "D203", "D205", "D206", "D213", "D300", "D400", "D415",
     "E111", "E114", "E117", "E501",
     "W191",
@@ -135,4 +145,8 @@ ignore = [
 # ANN102 - missing-type-cls
 # S101 - assert
 # B011 - assert-false
-"tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011"]
+# INP001 - implicit-namespace-package
+"tests/*" = ["ANN001", "ANN2", "ANN102", "S101", "B011", "INP001"]
+
+[tool.ruff.format]
+docstring-code-format = true

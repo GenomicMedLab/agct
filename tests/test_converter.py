@@ -1,4 +1,5 @@
 """Module for testing Converter initialization"""
+
 import pytest
 from tests.conftest import DATA_DIR
 
