@@ -186,7 +186,7 @@ jobs:
     ]
     environment:
       name: pypi
-      url: https://pypi.org/p/vrsix
+      url: https://pypi.org/p/agct
     permissions:
       id-token: write
       contents: write
