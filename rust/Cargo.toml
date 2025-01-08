@@ -13,5 +13,5 @@ directories = "5.0"
 omics = { version = "0.2.0", features = ["coordinate"] }
 
 [dependencies.pyo3]
-version = "0.20.2"
-features = ["abi3-py38"]
+version = "0.23.1"
+features = ["abi3-py310"]
