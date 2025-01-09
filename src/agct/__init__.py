@@ -2,4 +2,4 @@
 
 from agct.converter import Converter, Genome, Strand
 
-__all__ = ["Converter", "Strand", "Genome"]
+__all__ = ["Converter", "Genome", "Strand"]

@@ -90,12 +90,12 @@ class Converter:
 
         try:
             self._converter = _core.Converter(chainfile)
-        except FileNotFoundError as e:
-            _logger.error("Unable to open chainfile located at %s", chainfile)
-            raise e
-        except _core.ChainfileError as e:
-            _logger.error("Error reading chainfile located at %s", chainfile)
-            raise e
+        except FileNotFoundError:
+            _logger.exception("Unable to open chainfile located at %s", chainfile)
+            raise
+        except _core.ChainfileError:
+            _logger.exception("Error reading chainfile located at %s", chainfile)
+            raise
 
     @staticmethod
     def _download_function_builder(from_db: Genome, to_db: Genome) -> Callable:
@@ -147,7 +147,7 @@ class Converter:
         except _core.NoLiftoverError:
             results = []
         except _core.ChainfileError:
-            _logger.error(
+            _logger.exception(
                 "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, %s, %s)",
                 chrom,
                 pos,
@@ -159,12 +159,12 @@ class Converter:
             try:
                 pos = int(result[1])
             except ValueError:
-                _logger.error("Got invalid position value in %s", result)
+                _logger.exception("Got invalid position value in %s", result)
                 continue
             try:
                 strand = Strand(result[2])
             except ValueError:
-                _logger.error("Got invalid Strand value in %s", result)
+                _logger.exception("Got invalid Strand value in %s", result)
                 continue
             formatted_results.append((result[0], pos, strand))
         return formatted_results
