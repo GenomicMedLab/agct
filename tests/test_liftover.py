@@ -23,6 +23,10 @@ def test_hg19_to_hg38():
     assert len(result) == 1
     assert result[0] == ("chr7", 140753336, Strand.POSITIVE)
 
+    result = converter.convert_coordinate("chr1", 206072707)
+    assert len(result) == 1
+    assert result[0] == ("chr1", 206268644, Strand.NEGATIVE)
+
     # coordinate exceeds bounds
     result = converter.convert_coordinate("chr7", 14040053136)
     assert result == []

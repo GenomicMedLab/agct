@@ -1,6 +1,6 @@
 //! Provide Rust-based chainfile wrapping classes.
-use chain::core::{Coordinate, Interval, Strand};
 use chainfile as chain;
+use omics::coordinate::{interbase::Coordinate, interval::interbase::Interval, Strand};
 use pyo3::create_exception;
 use pyo3::exceptions::{PyException, PyFileNotFoundError, PyValueError};
 use pyo3::prelude::*;
@@ -40,7 +40,7 @@ impl Converter {
     }
 
     /// Perform liftover
-    pub fn lift(&self, chrom: &str, pos: usize, strand: &str) -> PyResult<Vec<Vec<String>>> {
+    pub fn lift(&self, chrom: &str, pos: u64, strand: &str) -> PyResult<Vec<Vec<String>>> {
         let parsed_strand = if strand == "+" {
             Strand::Positive
         } else if strand == "-" {
@@ -52,8 +52,8 @@ impl Converter {
             )));
         };
         // safe to unwrap coordinates because `pos` is always an int
-        let start = Coordinate::try_new(chrom, pos, parsed_strand.clone()).unwrap();
-        let end = Coordinate::try_new(chrom, pos + 1, parsed_strand.clone()).unwrap();
+        let start = Coordinate::new(chrom, parsed_strand.clone(), pos);
+        let end = Coordinate::new(chrom, parsed_strand.clone(), pos + 1);
 
         let Ok(interval) = Interval::try_new(start, end) else {
             return Err(ChainfileError::new_err(format!(
@@ -63,7 +63,7 @@ impl Converter {
                 pos + 1
             )));
         };
-        if let Some(liftover_result) = self.machine.liftover(&interval) {
+        if let Some(liftover_result) = self.machine.liftover(interval.clone()) {
             Ok(liftover_result
                 .iter()
                 .map(|r| {
@@ -86,7 +86,7 @@ impl Converter {
 /// agct._core Python module. Collect Python-facing methods.
 #[pymodule]
 #[pyo3(name = "_core")]
-fn agct(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn agct(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<Converter>()?;
     m.add("NoLiftoverError", _py.get_type::<NoLiftoverError>())?;
     m.add("ChainfileError", _py.get_type::<ChainfileError>())?;
