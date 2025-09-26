@@ -17,11 +17,11 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
 ]
 requires-python = ">=3.11"
 description = "Another Genome Conversion Tool: Python frontend to Rust chainfile crate"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = ["wags-tails"]
 
 [project.optional-dependencies]
@@ -121,6 +121,7 @@ fixable = [
     "FURB",
     "RUF"
 ]
+# ANN003 - missing-type-args
 # ANN003 - missing-type-kwargs
 # ANN101 - missing-type-self
 # ANN102 - missing-type-cls
@@ -140,7 +141,7 @@ fixable = [
 # PLC0206 - dict-index-missing-items
 # *ignored for compatibility with formatter
 ignore = [
-    "ANN003",
+    "ANN002", "ANN003",
     "D203", "D205", "D206", "D213", "D300", "D400", "D415",
     "E111", "E114", "E117", "E501",
     "W191",
