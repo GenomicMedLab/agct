@@ -1,17 +1,17 @@
 """Module for testing Converter initialization"""
 
 import re
+from pathlib import Path
 
 import pytest
-from tests.conftest import DATA_DIR
 
 from agct import Converter, Genome
 
 
-def test_valid():
+def test_valid(data_dir: Path):
     """Test valid initialization"""
     assert Converter(
-        chainfile=str(DATA_DIR / "ucsc-chainfile" / "chainfile_hg19_to_hg38_.chain")
+        chainfile=str(data_dir / "ucsc-chainfile" / "chainfile_hg19_to_hg38_.chain")
     )
 
 
@@ -20,7 +20,9 @@ def test_invalid():
     with pytest.raises(ValueError, match="Must provide both `from_db` and `to_db`"):
         Converter()
 
-    with pytest.raises(ValueError, match="Liftover must be to/from different sources."):
+    with pytest.raises(
+        ValueError, match=re.escape("Liftover must be to/from different sources.")
+    ):
         Converter(Genome.HG19, Genome.HG19)
 
     with pytest.raises(
