@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from agct import Converter, Genome
+from agct import Assembly, Converter
 
 
 def test_valid(data_dir: Path):
@@ -23,12 +23,12 @@ def test_invalid():
     with pytest.raises(
         ValueError, match=re.escape("Liftover must be to/from different sources.")
     ):
-        Converter(Genome.HG19, Genome.HG19)
+        Converter(Assembly.HG19, Assembly.HG19)
 
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Unable to coerce to_db value 'hg18' to a known reference genome: [<Genome.HG38: 'hg38'>, <Genome.HG19: 'hg19'>]"
+            "Unable to coerce to_db value 'hg18' to a known reference genome: [<Assembly.HG38: 'hg38'>, <Assembly.HG19: 'hg19'>]"
         ),
     ):
-        Converter(Genome.HG19, "hg18")
+        Converter(Assembly.HG19, "hg18")

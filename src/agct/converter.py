@@ -10,6 +10,7 @@ from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
 import agct._core as _core
+from agct.assembly_registry import Assembly
 
 _logger = logging.getLogger(__name__)
 
@@ -21,17 +22,6 @@ class Strand(str, Enum):
     NEGATIVE = "-"
 
 
-class Genome(str, Enum):
-    """Constrain genome values.
-
-    We could conceivably support every UCSC chainfile offering, but for now, we'll
-    stick with internal use cases only.
-    """
-
-    HG38 = "hg38"
-    HG19 = "hg19"
-
-
 class Converter:
     """Chainfile-based liftover provider for a single sequence to sequence
     association.
@@ -39,8 +29,8 @@ class Converter:
 
     def __init__(
         self,
-        from_db: Genome | str | None = None,
-        to_db: Genome | str | None = None,
+        from_db: Assembly | str | None = None,
+        to_db: Assembly | str | None = None,
         chainfile: str | None = None,
     ) -> None:
         """Initialize liftover instance.
@@ -67,15 +57,15 @@ class Converter:
 
             if isinstance(from_db, str):
                 try:
-                    from_db = Genome(from_db)
+                    from_db = Assembly(from_db)
                 except ValueError as e:
-                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Genome)}"
+                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Assembly)}"
                     raise ValueError(msg) from e
             if isinstance(to_db, str):
                 try:
-                    to_db = Genome(to_db)
+                    to_db = Assembly(to_db)
                 except ValueError as e:
-                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Genome)}"
+                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Assembly)}"
                     raise ValueError(msg) from e
 
             data_handler = CustomData(
@@ -98,7 +88,7 @@ class Converter:
             raise
 
     @staticmethod
-    def _download_function_builder(from_db: Genome, to_db: Genome) -> Callable:
+    def _download_function_builder(from_db: Assembly, to_db: Assembly) -> Callable:
         """Build downloader function for chainfile corresponding to source/destination
         params.
 
