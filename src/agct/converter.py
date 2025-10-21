@@ -127,13 +127,13 @@ class Converter:
 
         The ``Strand`` enum provides constraints for legal strand values:
 
-        .. code-block:: python
+        .. code-block:: pycon
 
-           from agct import Converter, Strand, Assembly
+           >>> from agct import Converter, Strand, Assembly
 
-           c = Converter(Assembly.HG19, Assembly.HG38)
-           c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
-           # returns [['chr7', 140753336, '+']]
+           >>> c = Converter(Assembly.HG19, Assembly.HG38)
+           >>> c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
+           [LiftoverResult(chrom='chr7', position=140753336, strand=<Strand.POSITIVE: '+'>)]
 
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
