@@ -138,8 +138,11 @@ _error_pattern = re.compile(r"^SQ.[0-9A-Za-z_\\-]{32}$")
 def get_assembly_from_refget_id(refget_accession: str) -> Assembly | None:
     """Given a GA4GH SequenceReference refget accession ID, get back its corresponding reference genome
 
-    >>> get_assembly_from_refget_id("SQ.pnAqCRBrTsUoBghSD1yp_jXWSmlbdh4g")
-    Genome.HG38
+    .. code-block:: pycon
+
+        >>> from agct.assembly_registry import get_assembly_from_refget_id
+        >>> get_assembly_from_refget_id("SQ.pnAqCRBrTsUoBghSD1yp_jXWSmlbdh4g")
+        Genome.HG38
 
     Use to get an appropriate converter from a referenced GA4GH variation object.
 

@@ -29,50 +29,41 @@ class Converter:
 
     def __init__(
         self,
-        from_db: Assembly | str | None = None,
-        to_db: Assembly | str | None = None,
+        from_assembly: Assembly | None = None,
+        to_assembly: Assembly | None = None,
         chainfile: str | None = None,
     ) -> None:
         """Initialize liftover instance.
 
-        :param from_db: database name, e.g. ``"hg19"``. Must be different than ``to_db``
-            If ``chainfile`` is provided, will ignore this argument
-        :param to_db: database name, e.g. ``"hg38"``. Must be different than ``from_db``
-            If ``chainfile`` is provided, will ignore this argument
+        Initialize with either ``from_assembly`` and ``to_assembly``, or directly with a chainfile.
+
+        * If using assembly params, both must be provided, and they must be different
+        * If using assembly params, the ``wags-tails`` library will be used to locate and, if
+          necessary, acquire the pertinent chainfile from the UCSC web server. See
+          the `wags-tails documentation <https://wags-tails.readthedocs.io/>`_ for more info.
+        * If ``chainfile`` arg is provided, all other args are ignored.
+
+        :param from_assembly: Assembly name, e.g. ``<Assembly.HG19>``
+        :param to_assembly: database name, e.g. ``"hg38"``.
         :param chainfile: Path to chainfile
-            If not provided, must provide both ``from_db`` and ``to_db`` so that
-            ``wags-tails`` can download the corresponding chainfile
         :raise ValueError: if required arguments are not passed or are invalid
         :raise FileNotFoundError: if unable to open corresponding chainfile
         :raise _core.ChainfileError: if unable to read chainfile (i.e. it's invalid)
         """
         if not chainfile:
-            if from_db is None or to_db is None:
-                msg = "Must provide both `from_db` and `to_db`"
+            if from_assembly is None or to_assembly is None:
+                msg = "Must provide both `from_assembly` and `to_assembly`"
                 raise ValueError(msg)
 
-            if from_db == to_db:
+            if from_assembly == to_assembly:
                 msg = "Liftover must be to/from different sources."
                 raise ValueError(msg)
 
-            if isinstance(from_db, str):
-                try:
-                    from_db = Assembly(from_db)
-                except ValueError as e:
-                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Assembly)}"
-                    raise ValueError(msg) from e
-            if isinstance(to_db, str):
-                try:
-                    to_db = Assembly(to_db)
-                except ValueError as e:
-                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Assembly)}"
-                    raise ValueError(msg) from e
-
             data_handler = CustomData(
-                f"chainfile_{from_db.value}_to_{to_db.value}",
+                f"chainfile_{from_assembly.value}_to_{to_assembly.value}",
                 "chain",
                 lambda: "",
-                self._download_function_builder(from_db, to_db),
+                self._download_function_builder(from_assembly, to_assembly),
                 data_dir=get_data_dir() / "ucsc-chainfile",
             )
             file, _ = data_handler.get_latest()
@@ -120,9 +111,9 @@ class Converter:
 
         .. code-block:: python
 
-           from agct import Converter, Strand
+           from agct import Converter, Strand, Assembly
 
-           c = Converter("hg19", "hg38")
+           c = Converter(Assembly.HG19, Assembly.HG38)
            c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
            # returns [['chr7', 140753336, '+']]
 

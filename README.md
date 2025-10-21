@@ -24,8 +24,9 @@ python3 -m pip install agct
 Initialize a class instance:
 
 ```python3
-from agct import Converter, Genome
-c = Converter(Genome.HG38, Genome.HG19)
+from agct import Converter, Assembly, Strand
+
+c = Converter(Assembly.HG19, Assembly.HG38)
 ```
 
 > If a chainfile is unavailable locally, it's downloaded from UCSC and saved using the `wags-tails` package -- see the [wags-tails configuration instructions](https://github.com/GenomicMedLab/wags-tails?tab=readme-ov-file#configuration) for information on how to designate a non-default storage location.
@@ -33,8 +34,7 @@ c = Converter(Genome.HG38, Genome.HG19)
 Call ``convert_coordinate()``:
 
 ```python3
-c.convert_coordinate("chr7", 140453136, "+")
-# [['chr7', 140152936, <Strand.POSITIVE: '+'>]]
+c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
 ```
 
 ## Development
