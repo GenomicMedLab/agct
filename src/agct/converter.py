@@ -59,8 +59,15 @@ class Converter:
                 msg = "Liftover must be to/from different sources."
                 raise ValueError(msg)
 
+            try:
+                file_prefix = f"chainfile_{from_assembly.value}_to_{to_assembly.value}"
+            except AttributeError as e:
+                msg = f"Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly={from_assembly} and to_assembly={to_assembly}"
+                _logger.exception(msg)
+                raise ValueError(msg) from e
+
             data_handler = CustomData(
-                f"chainfile_{from_assembly.value}_to_{to_assembly.value}",
+                file_prefix,
                 "chain",
                 lambda: "",
                 self._download_function_builder(from_assembly, to_assembly),
@@ -79,15 +86,17 @@ class Converter:
             raise
 
     @staticmethod
-    def _download_function_builder(from_db: Assembly, to_db: Assembly) -> Callable:
+    def _download_function_builder(
+        from_assembly: Assembly, to_assembly: Assembly
+    ) -> Callable:
         """Build downloader function for chainfile corresponding to source/destination
         params.
 
         Wags-Tails' custom data handler takes a downloader callback function. We
         construct it here, curried with from/to values in the download URL.
 
-        :param from_db: genome lifting from
-        :param to_db: genome lifting to
+        :param from_assembly: genome lifting from
+        :param to_assembly: genome lifting to
         :return: Function that downloads appropriate chainfile from UCSC
         """
 
@@ -97,7 +106,7 @@ class Converter:
             :param version: not used
             :param file: path to save file to
             """
-            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_db.value}/liftOver/{from_db.value}To{to_db.value.title()}.over.chain.gz"
+            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_assembly.value}/liftOver/{from_assembly.value}To{to_assembly.value.title()}.over.chain.gz"
             download_http(url, file, handler=handle_gzip)
 
         return _download_data
