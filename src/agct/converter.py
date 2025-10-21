@@ -4,6 +4,7 @@ import logging
 from collections.abc import Callable
 from enum import Enum
 from pathlib import Path
+from typing import NamedTuple
 
 from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
@@ -20,6 +21,14 @@ class Strand(str, Enum):
 
     POSITIVE = "+"
     NEGATIVE = "-"
+
+
+class LiftoverResult(NamedTuple):
+    """Declare structure of liftover response"""
+
+    chrom: str
+    position: int
+    strand: Strand
 
 
 class Converter:
@@ -113,7 +122,7 @@ class Converter:
 
     def convert_coordinate(
         self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
-    ) -> list[tuple[str, int, Strand]]:
+    ) -> list[LiftoverResult]:
         """Perform liftover for given params
 
         The ``Strand`` enum provides constraints for legal strand values:
@@ -144,7 +153,7 @@ class Converter:
                 strand,
             )
             results = []
-        formatted_results: list[tuple[str, int, Strand]] = []
+        formatted_results: list[LiftoverResult] = []
         for result in results:
             try:
                 pos = int(result[1])
@@ -156,5 +165,5 @@ class Converter:
             except ValueError:
                 _logger.exception("Got invalid Strand value in %s", result)
                 continue
-            formatted_results.append((result[0], pos, strand))
+            formatted_results.append(LiftoverResult(result[0], pos, strand))
         return formatted_results
