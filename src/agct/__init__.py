@@ -1,5 +1,6 @@
 """Provide fast liftover in Python via the ``chainfile`` crate."""
 
-from agct.converter import Converter, Genome, Strand
+from agct.assembly_registry import Assembly, get_assembly_from_refget_id
+from agct.converter import Converter, Strand
 
-__all__ = ["Converter", "Genome", "Strand"]
+__all__ = ["Assembly", "Converter", "Strand", "get_assembly_from_refget_id"]
