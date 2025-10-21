@@ -20,6 +20,10 @@ def test_assembly_fetcher():
         get_assembly_from_refget_id("SQ.KqaUhJMW3CDjhoVtBetdEKT1n6hM-7Ek")
         == Assembly.HG19
     )
+    assert (
+        get_assembly_from_refget_id("SQ.LpTaNW-hwuY_yARP0rtarCnpCQLkgVCg")
+        == Assembly.HG19
+    )
 
 
 def test_unknown_sequences():

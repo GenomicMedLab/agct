@@ -30,7 +30,7 @@ def test_invalid():
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly=Assembly.HG19 and to_assembly=hg18"
+            "Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly=hg19 and to_assembly=hg18"
         ),
     ):
         Converter(Assembly.HG19, "hg18")

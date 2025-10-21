@@ -12,12 +12,12 @@ conservative and currently reflects internal use cases; extend it as needed.
 
 import logging
 import re
-from enum import Enum
+from enum import StrEnum
 
 _logger = logging.getLogger(__name__)
 
 
-class Assembly(str, Enum):
+class Assembly(StrEnum):
     """Constrain reference genome assembly values.
 
     We could conceivably support every UCSC chainfile offering, but for now, we'll
@@ -29,7 +29,7 @@ class Assembly(str, Enum):
 
 
 ID_TO_REFERENCE_MAP = {
-    Assembly.HG38: {
+    Assembly.HG38: [
         # chr1
         "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
         # chr2
@@ -78,8 +78,8 @@ ID_TO_REFERENCE_MAP = {
         "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
         # chr24/chrY
         "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-    },
-    Assembly.HG19: {
+    ],
+    Assembly.HG19: [
         # chr1
         "SQ.S_KjnFVz-FE7M0W6yoaUDgYxLPc1jyWU",
         # chr2
@@ -121,14 +121,14 @@ ID_TO_REFERENCE_MAP = {
         # chr20
         "SQ.iy_UbUrvECxFRX5LPTH_KPojdlT7BKsf",
         # chr21
-        "SQ.LpTaNW-hwuY_yARP0rtarCnpCQLkgVCg"
+        "SQ.LpTaNW-hwuY_yARP0rtarCnpCQLkgVCg",
         # chr22
         "SQ.XOgHwwR3Upfp5sZYk6ZKzvV25a4RBVu8",
         # chr23
         "SQ.v7noePfnNpK8ghYXEqZ9NukMXW7YeNsm",
         # chr24/chrY
         "SQ.BT7QyW5iXaX_1PSX-msSGYsqRdMKqkj-",
-    },
+    ],
 }
 
 
