@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from agct import Converter, Genome
+from agct import Assembly, Converter
 
 
 def test_valid(data_dir: Path):
@@ -17,18 +17,20 @@ def test_valid(data_dir: Path):
 
 def test_invalid():
     """Test invalid initialization"""
-    with pytest.raises(ValueError, match="Must provide both `from_db` and `to_db`"):
+    with pytest.raises(
+        ValueError, match="Must provide both `from_assembly` and `to_assembly`"
+    ):
         Converter()
 
     with pytest.raises(
         ValueError, match=re.escape("Liftover must be to/from different sources.")
     ):
-        Converter(Genome.HG19, Genome.HG19)
+        Converter(Assembly.HG19, Assembly.HG19)
 
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "Unable to coerce to_db value 'hg18' to a known reference genome: [<Genome.HG38: 'hg38'>, <Genome.HG19: 'hg19'>]"
+            "Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly=hg19 and to_assembly=hg18"
         ),
     ):
-        Converter(Genome.HG19, "hg18")
+        Converter(Assembly.HG19, "hg18")

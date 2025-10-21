@@ -10,6 +10,7 @@ from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
 import agct._core as _core
+from agct.assembly_registry import Assembly
 
 _logger = logging.getLogger(__name__)
 
@@ -21,17 +22,6 @@ class Strand(str, Enum):
     NEGATIVE = "-"
 
 
-class Genome(str, Enum):
-    """Constrain genome values.
-
-    We could conceivably support every UCSC chainfile offering, but for now, we'll
-    stick with internal use cases only.
-    """
-
-    HG38 = "hg38"
-    HG19 = "hg19"
-
-
 class Converter:
     """Chainfile-based liftover provider for a single sequence to sequence
     association.
@@ -39,50 +29,48 @@ class Converter:
 
     def __init__(
         self,
-        from_db: Genome | str | None = None,
-        to_db: Genome | str | None = None,
+        from_assembly: Assembly | None = None,
+        to_assembly: Assembly | None = None,
         chainfile: str | None = None,
     ) -> None:
         """Initialize liftover instance.
 
-        :param from_db: database name, e.g. ``"hg19"``. Must be different than ``to_db``
-            If ``chainfile`` is provided, will ignore this argument
-        :param to_db: database name, e.g. ``"hg38"``. Must be different than ``from_db``
-            If ``chainfile`` is provided, will ignore this argument
+        Initialize with either ``from_assembly`` and ``to_assembly``, or directly with a chainfile.
+
+        * If using assembly params, both must be provided, and they must be different
+        * If using assembly params, the ``wags-tails`` library will be used to locate and, if
+          necessary, acquire the pertinent chainfile from the UCSC web server. See
+          the `wags-tails documentation <https://wags-tails.readthedocs.io/>`_ for more info.
+        * If ``chainfile`` arg is provided, all other args are ignored.
+
+        :param from_assembly: Assembly name, e.g. ``<Assembly.HG19>``
+        :param to_assembly: database name, e.g. ``"hg38"``.
         :param chainfile: Path to chainfile
-            If not provided, must provide both ``from_db`` and ``to_db`` so that
-            ``wags-tails`` can download the corresponding chainfile
         :raise ValueError: if required arguments are not passed or are invalid
         :raise FileNotFoundError: if unable to open corresponding chainfile
         :raise _core.ChainfileError: if unable to read chainfile (i.e. it's invalid)
         """
         if not chainfile:
-            if from_db is None or to_db is None:
-                msg = "Must provide both `from_db` and `to_db`"
+            if from_assembly is None or to_assembly is None:
+                msg = "Must provide both `from_assembly` and `to_assembly`"
                 raise ValueError(msg)
 
-            if from_db == to_db:
+            if from_assembly == to_assembly:
                 msg = "Liftover must be to/from different sources."
                 raise ValueError(msg)
 
-            if isinstance(from_db, str):
-                try:
-                    from_db = Genome(from_db)
-                except ValueError as e:
-                    msg = f"Unable to coerce from_db value '{from_db}' to a known reference genome: {list(Genome)}"
-                    raise ValueError(msg) from e
-            if isinstance(to_db, str):
-                try:
-                    to_db = Genome(to_db)
-                except ValueError as e:
-                    msg = f"Unable to coerce to_db value '{to_db}' to a known reference genome: {list(Genome)}"
-                    raise ValueError(msg) from e
+            try:
+                file_prefix = f"chainfile_{from_assembly.value}_to_{to_assembly.value}"
+            except AttributeError as e:
+                msg = f"Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly={from_assembly} and to_assembly={to_assembly}"
+                _logger.exception(msg)
+                raise ValueError(msg) from e
 
             data_handler = CustomData(
-                f"chainfile_{from_db.value}_to_{to_db.value}",
+                file_prefix,
                 "chain",
                 lambda: "",
-                self._download_function_builder(from_db, to_db),
+                self._download_function_builder(from_assembly, to_assembly),
                 data_dir=get_data_dir() / "ucsc-chainfile",
             )
             file, _ = data_handler.get_latest()
@@ -98,15 +86,17 @@ class Converter:
             raise
 
     @staticmethod
-    def _download_function_builder(from_db: Genome, to_db: Genome) -> Callable:
+    def _download_function_builder(
+        from_assembly: Assembly, to_assembly: Assembly
+    ) -> Callable:
         """Build downloader function for chainfile corresponding to source/destination
         params.
 
         Wags-Tails' custom data handler takes a downloader callback function. We
         construct it here, curried with from/to values in the download URL.
 
-        :param from_db: genome lifting from
-        :param to_db: genome lifting to
+        :param from_assembly: genome lifting from
+        :param to_assembly: genome lifting to
         :return: Function that downloads appropriate chainfile from UCSC
         """
 
@@ -116,7 +106,7 @@ class Converter:
             :param version: not used
             :param file: path to save file to
             """
-            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_db.value}/liftOver/{from_db.value}To{to_db.value.title()}.over.chain.gz"
+            url = f"https://hgdownload.soe.ucsc.edu/goldenPath/{from_assembly.value}/liftOver/{from_assembly.value}To{to_assembly.value.title()}.over.chain.gz"
             download_http(url, file, handler=handle_gzip)
 
         return _download_data
@@ -130,9 +120,9 @@ class Converter:
 
         .. code-block:: python
 
-           from agct import Converter, Strand
+           from agct import Converter, Strand, Assembly
 
-           c = Converter("hg19", "hg38")
+           c = Converter(Assembly.HG19, Assembly.HG38)
            c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
            # returns [['chr7', 140753336, '+']]
 

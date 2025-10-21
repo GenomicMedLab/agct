@@ -1,11 +1,11 @@
 """Run liftover tests."""
 
-from agct import Converter, Genome, Strand
+from agct import Assembly, Converter, Strand
 
 
 def test_hg19_to_hg38():
     """Test hg19 to hg38 lifter."""
-    converter = Converter(Genome.HG19, Genome.HG38)
+    converter = Converter(Assembly.HG19, Assembly.HG38)
 
     result = converter.convert_coordinate("chr7", 140439611)
     assert len(result) == 1
@@ -34,7 +34,7 @@ def test_hg19_to_hg38():
 
 def test_hg38_to_hg19():
     """Test hg38 to hg19 lifter."""
-    converter = Converter(Genome.HG38, Genome.HG19)
+    converter = Converter(Assembly.HG38, Assembly.HG19)
 
     result = converter.convert_coordinate("chr7", 140739811)
     assert len(result) == 1
