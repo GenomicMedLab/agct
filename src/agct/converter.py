@@ -131,10 +131,9 @@ class Converter:
         .. code-block:: pycon
 
            >>> from agct import Converter, Strand, Assembly
-
            >>> c = Converter(Assembly.HG19, Assembly.HG38)
-           >>> c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)  # TODO update
-           [LiftoverResult(chrom='chr7', position=140753336, strand=<Strand.POSITIVE: '+'>)]
+           >>> c.convert_coordinate("chr7", 140453136, 140453137, Strand.POSITIVE)
+           [LiftoverResult(chrom='chr7', start=140753336, end=140753337, strand=<Strand.POSITIVE: '+'>)]
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
         :param start: start position of coordinate interval (inter-residue)
