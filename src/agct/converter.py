@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Callable
 from enum import Enum
+from functools import cache
 from pathlib import Path
 
 from wags_tails import CustomData
@@ -158,3 +159,8 @@ class Converter:
                 continue
             formatted_results.append((result[0], pos, strand))
         return formatted_results
+
+
+@cache
+def get_converter(from_assembly: Assembly, to_assembly: Assembly) -> Converter:
+    return Converter(from_assembly=from_assembly, to_assembly=to_assembly)
