@@ -10,7 +10,6 @@ use std::io::BufReader;
 create_exception!(agct, NoLiftoverError, PyException);
 create_exception!(agct, ChainfileError, PyException);
 create_exception!(agct, StrandValueError, PyException);
-create_exception!(agct, CoordinateIntervalValueError, PyException);
 
 /// Define core Converter class to be used by Python interface.
 /// Effectively just a wrapper on top of the chainfile crate's Machine struct.
@@ -48,7 +47,6 @@ impl Converter {
         end: u64,
         strand: &str,
     ) -> PyResult<Vec<Vec<String>>> {
-        // TODO check if start > end etc
         let parsed_strand = if strand == "+" {
             Strand::Positive
         } else if strand == "-" {
@@ -59,12 +57,6 @@ impl Converter {
                 strand
             )));
         };
-        if start > end && parsed_strand == Strand::Positive {
-            return Err(CoordinateIntervalValueError::new_err(format!("Start coordinate must be less than or equal to end coordinate for positive strand input")));
-        }
-        if start < end && parsed_strand == Strand::Negative {
-            return Err(CoordinateIntervalValueError::new_err(format!("Start coordinate must be greater than or equal to end coordinate for negative strand input")));
-        }
         // safe to unwrap coordinates because `pos` is always an int
         let start_coordinate = Coordinate::new(chrom, parsed_strand.clone(), start);
         let end_coordinate = Coordinate::new(chrom, parsed_strand.clone(), end);
@@ -105,9 +97,5 @@ fn agct(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add("NoLiftoverError", _py.get_type::<NoLiftoverError>())?;
     m.add("ChainfileError", _py.get_type::<ChainfileError>())?;
     m.add("StrandValueError", _py.get_type::<StrandValueError>())?;
-    m.add(
-        "CoordinateIntervalValueError",
-        _py.get_type::<CoordinateIntervalValueError>(),
-    )?;
     Ok(())
 }

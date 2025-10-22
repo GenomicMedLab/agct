@@ -136,13 +136,20 @@ class Converter:
            >>> c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)  # TODO update
            [LiftoverResult(chrom='chr7', position=140753336, strand=<Strand.POSITIVE: '+'>)]
 
-
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
-        :param start:
-        :param end:
+        :param start: start position of coordinate interval (inter-residue)
+        :param end: end position of coordinate interval (inter-residue)
         :param strand: query strand (``"+"`` by default).
         :return: list of coordinate matches (possibly empty)
+        :raise ValueError: if ``start`` > ``end`` and strandedness is positive, or
+            ``start`` < ``end`` and strandedness is negative
         """
+        if start < end and strand == Strand.NEGATIVE:
+            msg = f"`start` must be less than `end` on the negative strand: {start=}, {end=}"
+            raise ValueError(msg)
+        if start > end and strand == Strand.POSITIVE:
+            msg = f"`end` must be less than `start` on the positive strand: {start=}, {end=}"
+            raise ValueError(msg)
         try:
             results = self._converter.lift(chrom, start, end, strand)
         except _core.NoLiftoverError:

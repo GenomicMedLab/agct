@@ -1,5 +1,9 @@
 """Run liftover tests."""
 
+import re
+
+import pytest
+
 from agct import Assembly, Converter, LiftoverResult, Strand
 
 
@@ -55,3 +59,26 @@ def test_hg38_to_hg19():
     result = converter.convert_coordinate("chr7", 60878240, 60878245)
     assert len(result) == 1
     assert result[0] == LiftoverResult("chr7", 61646115, 61646120, Strand.POSITIVE)
+
+
+def test_interval_input():
+    """Test that invalid intervals raise errors"""
+    converter = Converter(Assembly.HG38, Assembly.HG19)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "`end` must be less than `start` on the positive strand: start=140739811, end=140739809"
+        ),
+    ):
+        converter.convert_coordinate("chr7", 140739811, 140739809)
+
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "`start` must be less than `end` on the negative strand: start=206268644, end=206268645"
+        ),
+    ):
+        converter.convert_coordinate(
+            "chr1", 206268644, 206268645, strand=Strand.NEGATIVE
+        )
