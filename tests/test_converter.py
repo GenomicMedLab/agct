@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from agct import Assembly, Converter
+from agct import Assembly, Converter, get_converter
 
 
 def test_valid(data_dir: Path):
@@ -34,3 +34,13 @@ def test_invalid():
         ),
     ):
         Converter(Assembly.HG19, "hg18")
+
+
+def test_factory_function():
+    assert id(get_converter(Assembly.HG19, Assembly.HG38)) == id(
+        get_converter(Assembly.HG19, Assembly.HG38)
+    ), "Factory function isn't returning the same instance on successive calls"
+
+    assert id(get_converter(Assembly.HG19, Assembly.HG38)) != id(
+        get_converter(Assembly.HG38, Assembly.HG19)
+    )
