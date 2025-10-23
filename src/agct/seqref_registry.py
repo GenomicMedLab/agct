@@ -143,5 +143,10 @@ def get_seqinfo_from_refget_id(
 def get_refget_id_from_seqinfo(
     assembly: Assembly, chromosome: Chromosome
 ) -> str | None:
-    """Given an assembly/chromosome pairing, get a refget accession ID, if known"""
+    """Given an assembly/chromosome pairing, get a refget accession ID, if known
+
+    :param assembly: reference assembly for sequence
+    :param chromosome: chromosome name
+    :return: a refget sequence accession ID, if known
+    """
     return REFGET_ID_LOOKUP.get((assembly, chromosome))
