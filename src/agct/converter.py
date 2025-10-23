@@ -12,7 +12,7 @@ from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
 import agct._core as _core
-from agct.assembly_registry import Assembly
+from agct.seqref_registry import Assembly
 
 _logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ class Converter:
             try:
                 file_prefix = f"chainfile_{from_assembly.value}_to_{to_assembly.value}"
             except AttributeError as e:
-                msg = f"Assembly args must be instance of `agct.assembly_registry.Genome`, instead got from_assembly={from_assembly} and to_assembly={to_assembly}"
+                msg = f"Assembly args must be instance of `agct.seqref_registry.Genome`, instead got from_assembly={from_assembly} and to_assembly={to_assembly}"
                 _logger.exception(msg)
                 raise ValueError(msg) from e
 
