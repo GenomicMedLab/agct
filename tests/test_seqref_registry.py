@@ -24,6 +24,10 @@ def test_assembly_fetcher():
         Assembly.HG19,
         Chromosome.CHR21,
     )
+    assert get_seqinfo_from_refget_id("SQ.v7noePfnNpK8ghYXEqZ9NukMXW7YeNsm") == (
+        Assembly.HG19,
+        Chromosome.CHRX,
+    )
 
 
 def test_unknown_sequences():
