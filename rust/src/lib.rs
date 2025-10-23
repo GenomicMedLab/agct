@@ -40,7 +40,13 @@ impl Converter {
     }
 
     /// Perform liftover
-    pub fn lift(&self, chrom: &str, pos: u64, strand: &str) -> PyResult<Vec<Vec<String>>> {
+    pub fn lift(
+        &self,
+        chrom: &str,
+        start: u64,
+        end: u64,
+        strand: &str,
+    ) -> PyResult<Vec<Vec<String>>> {
         let parsed_strand = if strand == "+" {
             Strand::Positive
         } else if strand == "-" {
@@ -52,15 +58,14 @@ impl Converter {
             )));
         };
         // safe to unwrap coordinates because `pos` is always an int
-        let start = Coordinate::new(chrom, parsed_strand.clone(), pos);
-        let end = Coordinate::new(chrom, parsed_strand.clone(), pos + 1);
+        let start_coordinate = Coordinate::new(chrom, parsed_strand.clone(), start);
+        let end_coordinate = Coordinate::new(chrom, parsed_strand.clone(), end);
 
-        let Ok(interval) = Interval::try_new(start, end) else {
+        let Ok(interval) = Interval::try_new(start_coordinate.clone(), end_coordinate.clone())
+        else {
             return Err(ChainfileError::new_err(format!(
                 "Chainfile yielded invalid interval from coordinates: \"{}\" (\"{}\", \"{}\")",
-                &chrom,
-                pos,
-                pos + 1
+                &chrom, start_coordinate, end_coordinate
             )));
         };
         if let Some(liftover_result) = self.machine.liftover(interval.clone()) {
@@ -70,14 +75,15 @@ impl Converter {
                     vec![
                         r.query().contig().to_string(),
                         r.query().start().position().to_string(),
+                        r.query().end().position().to_string(),
                         r.query().strand().to_string(),
                     ]
                 })
                 .collect())
         } else {
             Err(NoLiftoverError::new_err(format!(
-                "No liftover available for \"{}\" on \"{}\"",
-                chrom, pos
+                "No liftover available for \"{}\" on [\"{}\",\"{}\"]",
+                chrom, start_coordinate, end_coordinate
             )))
         }
     }

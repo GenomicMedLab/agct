@@ -34,7 +34,8 @@ c = Converter(Assembly.HG19, Assembly.HG38)
 Call ``convert_coordinate()``:
 
 ```python3
-c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
+c.convert_coordinate("chr7", 140453136, 140453137, Strand.POSITIVE)
+# returns [LiftoverResult(chrom='chr7', start=140753336, end=140753337, strand=<Strand.POSITIVE: '+'>)]
 ```
 
 ## Development
