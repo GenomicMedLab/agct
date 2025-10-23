@@ -3,7 +3,6 @@
 Maps refget accessions (``SQ.*``) to a tuple of (:class:`Assembly`, :class:`Chromosome`)
 and exposes helpers to look up the assembly/chromosome for a given ID. The registry is
 curated for internally-used builds (currently ``hg19``/``hg38``); extend as needed.
-
 """
 
 import logging
