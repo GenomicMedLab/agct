@@ -3,6 +3,7 @@
 import logging
 from collections.abc import Callable
 from enum import Enum
+from functools import cache
 from pathlib import Path
 from typing import NamedTuple
 
@@ -53,8 +54,8 @@ class Converter:
           the `wags-tails documentation <https://wags-tails.readthedocs.io/>`_ for more info.
         * If ``chainfile`` arg is provided, all other args are ignored.
 
-        :param from_assembly: Assembly name, e.g. ``<Assembly.HG19>``
-        :param to_assembly: database name, e.g. ``"hg38"``.
+        :param from_assembly: Name of assembly being lifted over from
+        :param to_assembly: Name of assembly to lift over to
         :param chainfile: Path to chainfile
         :raise ValueError: if required arguments are not passed or are invalid
         :raise FileNotFoundError: if unable to open corresponding chainfile
@@ -178,3 +179,17 @@ class Converter:
                 LiftoverResult(result[0], lifted_over_start, lifted_over_end, strand)
             )
         return formatted_results
+
+
+@cache
+def get_converter(from_assembly: Assembly, to_assembly: Assembly) -> Converter:
+    """Get a converter to lift from one assembly to another.
+
+    This function wraps converter initialization with ``functools.cache``, so successive
+    calls should return the same converter instance.
+
+    :param from_assembly: Name of assembly being lifted over from
+    :param to_assembly: Name of assembly to lift over to
+    :return: Converter instance
+    """
+    return Converter(from_assembly=from_assembly, to_assembly=to_assembly)
