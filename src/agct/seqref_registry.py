@@ -110,6 +110,8 @@ REFGET_ID_INFO = {
     "SQ.BT7QyW5iXaX_1PSX-msSGYsqRdMKqkj-": (Assembly.HG19, Chromosome.CHRY),
 }
 
+REFGET_ID_LOOKUP = {v: k for k, v in REFGET_ID_INFO.items()}
+
 
 _ERROR_PATTERN = re.compile(r"^SQ\.[0-9A-Za-z_\\-]{32}$")
 
@@ -137,3 +139,10 @@ def get_seqinfo_from_refget_id(
         _logger.error(msg)
         raise ValueError(msg)
     return REFGET_ID_INFO.get(refget_accession)
+
+
+def get_refget_id_from_seqinfo(
+    assembly: Assembly, chromosome: Chromosome
+) -> str | None:
+    """Given an assembly/chromosome pairing, get a refget accession ID, if known"""
+    return REFGET_ID_LOOKUP.get((assembly, chromosome))

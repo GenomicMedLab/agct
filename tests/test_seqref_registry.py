@@ -1,6 +1,11 @@
 import pytest
 
-from agct.seqref_registry import Assembly, Chromosome, get_seqinfo_from_refget_id
+from agct.seqref_registry import (
+    Assembly,
+    Chromosome,
+    get_refget_id_from_seqinfo,
+    get_seqinfo_from_refget_id,
+)
 
 
 def test_assembly_fetcher():
@@ -27,6 +32,51 @@ def test_assembly_fetcher():
     assert get_seqinfo_from_refget_id("SQ.v7noePfnNpK8ghYXEqZ9NukMXW7YeNsm") == (
         Assembly.HG19,
         Chromosome.CHRX,
+    )
+
+
+def test_seqid_fetcher():
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG38,
+            Chromosome.CHR10,
+        )
+        == "SQ.ss8r_wB0-b9r44TQTMmVTI92884QvBiB"
+    )
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG19,
+            Chromosome.CHR10,
+        )
+        == "SQ.-BOZ8Esn8J88qDwNiSEwUr5425UXdiGX"
+    )
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG38,
+            Chromosome.CHR6,
+        )
+        == "SQ.0iKlIQk2oZLoeOG9P1riRU6hvL5Ux8TV"
+    )
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG19,
+            Chromosome.CHR6,
+        )
+        == "SQ.KqaUhJMW3CDjhoVtBetdEKT1n6hM-7Ek"
+    )
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG19,
+            Chromosome.CHR21,
+        )
+        == "SQ.LpTaNW-hwuY_yARP0rtarCnpCQLkgVCg"
+    )
+    assert (
+        get_refget_id_from_seqinfo(
+            Assembly.HG19,
+            Chromosome.CHRX,
+        )
+        == "SQ.v7noePfnNpK8ghYXEqZ9NukMXW7YeNsm"
     )
 
 
