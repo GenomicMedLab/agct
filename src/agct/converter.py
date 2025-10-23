@@ -27,7 +27,8 @@ class LiftoverResult(NamedTuple):
     """Declare structure of liftover response"""
 
     chrom: str
-    position: int
+    start: int
+    end: int
     strand: Strand
 
 
@@ -121,7 +122,7 @@ class Converter:
         return _download_data
 
     def convert_coordinate(
-        self, chrom: str, pos: int, strand: Strand = Strand.POSITIVE
+        self, chrom: str, start: int, end: int, strand: Strand = Strand.POSITIVE
     ) -> list[LiftoverResult]:
         """Perform liftover for given params
 
@@ -130,40 +131,50 @@ class Converter:
         .. code-block:: pycon
 
            >>> from agct import Converter, Strand, Assembly
-
            >>> c = Converter(Assembly.HG19, Assembly.HG38)
-           >>> c.convert_coordinate("chr7", 140453136, Strand.POSITIVE)
-           [LiftoverResult(chrom='chr7', position=140753336, strand=<Strand.POSITIVE: '+'>)]
-
+           >>> c.convert_coordinate("chr7", 140453136, 140453137, Strand.POSITIVE)
+           [LiftoverResult(chrom='chr7', start=140753336, end=140753337, strand=<Strand.POSITIVE: '+'>)]
 
         :param chrom: chromosome name as given in chainfile. Usually e.g. ``"chr7"``.
-        :param pos: query position
+        :param start: start position of coordinate interval (inter-residue)
+        :param end: end position of coordinate interval (inter-residue)
         :param strand: query strand (``"+"`` by default).
         :return: list of coordinate matches (possibly empty)
+        :raise ValueError: if ``start`` > ``end`` and strandedness is positive, or
+            ``start`` < ``end`` and strandedness is negative
         """
+        if start < end and strand == Strand.NEGATIVE:
+            msg = f"`start` must be less than `end` on the negative strand: {start=}, {end=}"
+            raise ValueError(msg)
+        if start > end and strand == Strand.POSITIVE:
+            msg = f"`end` must be less than `start` on the positive strand: {start=}, {end=}"
+            raise ValueError(msg)
         try:
-            results = self._converter.lift(chrom, pos, strand)
+            results = self._converter.lift(chrom, start, end, strand)
         except _core.NoLiftoverError:
             results = []
         except _core.ChainfileError:
             _logger.exception(
-                "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, %s, %s)",
+                "Encountered internal error while converting coordinates - is the chainfile invalid? (%s, [%s, %s], %s)",
                 chrom,
-                pos,
+                start,
+                end,
                 strand,
             )
             results = []
         formatted_results: list[LiftoverResult] = []
         for result in results:
             try:
-                pos = int(result[1])
+                lifted_over_start, lifted_over_end = int(result[1]), int(result[2])
             except ValueError:
                 _logger.exception("Got invalid position value in %s", result)
                 continue
             try:
-                strand = Strand(result[2])
+                strand = Strand(result[3])
             except ValueError:
                 _logger.exception("Got invalid Strand value in %s", result)
                 continue
-            formatted_results.append(LiftoverResult(result[0], pos, strand))
+            formatted_results.append(
+                LiftoverResult(result[0], lifted_over_start, lifted_over_end, strand)
+            )
         return formatted_results
