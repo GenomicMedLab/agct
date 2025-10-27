@@ -112,7 +112,7 @@ REFGET_ID_INFO = {
 REFGET_ID_LOOKUP = {v: k for k, v in REFGET_ID_INFO.items()}
 
 
-_ERROR_PATTERN = re.compile(r"^SQ\.[0-9A-Za-z_\\-]{32}$")
+_REFGET_AC_PATTERN = re.compile(r"^SQ\.[0-9A-Za-z_\\-]{32}$")
 
 
 def get_seqinfo_from_refget_id(
@@ -133,7 +133,7 @@ def get_seqinfo_from_refget_id(
     :return: a reference assembly and chromosome, if successful
     :raise ValueError: if input appears to be in an invalid format for a refget accession ID
     """
-    if not re.match(_ERROR_PATTERN, refget_accession):
+    if not re.match(_REFGET_AC_PATTERN, refget_accession):
         msg = f"refget accession ID must be in format 'SQ.ABCDEFGHIJKLMNOPQRSTUVWXYZ123456'; got {refget_accession}"
         _logger.error(msg)
         raise ValueError(msg)
