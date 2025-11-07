@@ -8,6 +8,18 @@ from agct.seqref_registry import (
 )
 
 
+def test_assembly_enum():
+    assert Assembly("hg38") == Assembly.HG38
+    assert Assembly.HG38 == "hg38"
+    assert Assembly("hg19") == Assembly.HG19
+    assert Assembly.HG19 == "hg19"
+
+
+def test_assembly_enum_to_ncbi():
+    assert Assembly.HG19.as_grc == "GRCh37"
+    assert Assembly.HG38.as_grc == "GRCh38"
+
+
 def test_assembly_fetcher():
     assert get_seqinfo_from_refget_id("SQ.ss8r_wB0-b9r44TQTMmVTI92884QvBiB") == (
         Assembly.HG38,
