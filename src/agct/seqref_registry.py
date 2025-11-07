@@ -15,12 +15,27 @@ _logger = logging.getLogger(__name__)
 class Assembly(StrEnum):
     """Constrain reference genome assembly values.
 
+    Uses UCSC-style names because we're fetching UCSC chainfiles.
+
     We could conceivably support every UCSC chainfile offering, but for now, we'll
     stick with internal use cases only.
     """
 
     HG38 = "hg38"
     HG19 = "hg19"
+
+    @property
+    def as_grc(self) -> str:
+        """Return official Genome Reference Consortium assembly names
+
+        :return: `"GRCh38"` or `"GRCh37"`
+        :raise ValueError: if unrecognized enum option
+        """
+        if self.value == "hg38":
+            return "GRCh38"
+        if self.value == "hg19":
+            return "GRCh37"
+        raise ValueError
 
 
 class Chromosome(StrEnum):
