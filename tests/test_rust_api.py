@@ -1,7 +1,6 @@
 """Test some non-public aspects of the Rust layer."""
 
 import pytest
-
 from agct._core import ChainfileError, Converter
 
 

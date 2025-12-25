@@ -11,7 +11,7 @@ from wags_tails import CustomData
 from wags_tails.utils.downloads import download_http, handle_gzip
 from wags_tails.utils.storage import get_data_dir
 
-import agct._core as _core
+from agct import _core
 from agct.seqref_registry import Assembly
 
 _logger = logging.getLogger(__name__)
