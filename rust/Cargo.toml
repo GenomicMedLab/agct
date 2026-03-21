@@ -8,7 +8,7 @@ name = "agct"
 crate-type = ["cdylib"]
 
 [dependencies]
-chainfile = "0.3.0"
+chainfile = "0.4.0"
 directories = "5.0"
-omics = { version = "0.2.0", features = ["coordinate"] }
+omics = { version = "0.4.0", features = ["coordinate"] }
 pyo3 = { version = "0.23.3", features = ["abi3-py310"] }
