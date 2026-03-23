@@ -2,7 +2,7 @@
 
 import logging
 from collections.abc import Callable
-from enum import Enum
+from enum import StrEnum
 from functools import cache
 from pathlib import Path
 from typing import NamedTuple
@@ -17,7 +17,7 @@ from agct.seqref_registry import Assembly
 _logger = logging.getLogger(__name__)
 
 
-class Strand(str, Enum):
+class Strand(StrEnum):
     """Constrain strand values."""
 
     POSITIVE = "+"
@@ -31,6 +31,7 @@ class LiftoverResult(NamedTuple):
     start: int
     end: int
     strand: Strand
+    score: int
 
 
 class Converter:
@@ -142,7 +143,8 @@ class Converter:
         :param strand: query strand (``"+"`` by default).
         :return: list of coordinate matches (possibly empty)
         :raise ValueError: if ``start`` > ``end`` and strandedness is positive, or
-            ``start`` < ``end`` and strandedness is negative
+            ``start`` < ``end`` and strandedness is negative, or if position is too large
+            to represent as a 32 bit unsigned int
         """
         if start < end and strand == Strand.NEGATIVE:
             msg = f"`start` must be less than `end` on the negative strand: {start=}, {end=}"
@@ -163,22 +165,10 @@ class Converter:
                 strand,
             )
             results = []
-        formatted_results: list[LiftoverResult] = []
-        for result in results:
-            try:
-                lifted_over_start, lifted_over_end = int(result[1]), int(result[2])
-            except ValueError:
-                _logger.exception("Got invalid position value in %s", result)
-                continue
-            try:
-                strand = Strand(result[3])
-            except ValueError:
-                _logger.exception("Got invalid Strand value in %s", result)
-                continue
-            formatted_results.append(
-                LiftoverResult(result[0], lifted_over_start, lifted_over_end, strand)
-            )
-        return formatted_results
+        except OverflowError as e:
+            msg = f"Coordinates exceed representable bounds of a 32 bit unsigned int: {start=}, {end=} -- this is unsupported"
+            raise ValueError(msg) from e
+        return [LiftoverResult(*r) for r in results]
 
 
 @cache

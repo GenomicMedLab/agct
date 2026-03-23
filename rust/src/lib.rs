@@ -1,5 +1,6 @@
 //! Provide Rust-based chainfile wrapping classes.
 use chainfile as chain;
+use omics::coordinate::Contig;
 use omics::coordinate::{interbase::Coordinate, interval::interbase::Interval, Strand};
 use pyo3::create_exception;
 use pyo3::exceptions::{PyException, PyFileNotFoundError, PyValueError};
@@ -43,10 +44,10 @@ impl Converter {
     pub fn lift(
         &self,
         chrom: &str,
-        start: u64,
-        end: u64,
+        start: u32,
+        end: u32,
         strand: &str,
-    ) -> PyResult<Vec<Vec<String>>> {
+    ) -> PyResult<Vec<(String, u64, u64, String, usize)>> {
         let parsed_strand = if strand == "+" {
             Strand::Positive
         } else if strand == "-" {
@@ -57,9 +58,14 @@ impl Converter {
                 strand
             )));
         };
-        // safe to unwrap coordinates because `pos` is always an int
-        let start_coordinate = Coordinate::new(chrom, parsed_strand.clone(), start);
-        let end_coordinate = Coordinate::new(chrom, parsed_strand.clone(), end);
+        let chrom_contig = Contig::try_new(chrom).map_err(|_| {
+            PyValueError::new_err(format!(
+                "Unable to create contig from chrom name (must be nonempty): {}",
+                chrom
+            ))
+        })?;
+        let start_coordinate = Coordinate::new(chrom_contig.clone(), parsed_strand.clone(), start);
+        let end_coordinate = Coordinate::new(chrom_contig, parsed_strand.clone(), end);
 
         let Ok(interval) = Interval::try_new(start_coordinate.clone(), end_coordinate.clone())
         else {
@@ -71,13 +77,16 @@ impl Converter {
         if let Some(liftover_result) = self.machine.liftover(interval.clone()) {
             Ok(liftover_result
                 .iter()
-                .map(|r| {
-                    vec![
-                        r.query().contig().to_string(),
-                        r.query().start().position().to_string(),
-                        r.query().end().position().to_string(),
-                        r.query().strand().to_string(),
-                    ]
+                .flat_map(|chain_liftover| {
+                    chain_liftover.segments().iter().map(|segment| {
+                        (
+                            segment.query().contig().to_string(),
+                            segment.query().start().position().get(),
+                            segment.query().end().position().get(),
+                            segment.query().strand().to_string(),
+                            chain_liftover.chain().score(),
+                        )
+                    })
                 })
                 .collect())
         } else {
